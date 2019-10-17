@@ -3,7 +3,6 @@
     public abstract class BaseRequestHandler<TContext, TRequest> : IRequestHandler<TContext, TRequest>
         where TContext : BaseContext
     {
-     
         public IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
         public TContext Context { get; private set; }
 
@@ -14,16 +13,23 @@
 
         protected RequestHandlerResult Next(TRequest request)
         {
-
             if (NextRequestHandler != null)
                 this.Context.Response = NextRequestHandler.HandleRequest(request);
 
             return this.Context.Response;
         }
-        public abstract RequestHandlerResult HandleRequest(TRequest request);
 
+        protected RequestHandlerResult Abort(string errorMessage)
+            => this.Context.Response = new RequestHandlerResult(errorMessage);
+
+
+        protected RequestHandlerResult Finish(object result)
+            => this.Context.Response = new RequestHandlerResult(result);
+
+
+        public abstract RequestHandlerResult HandleRequest(TRequest request);
     }
-    
+
     public interface IRequestHandler<TContext, TRequest> where TContext : BaseContext
     {
         RequestHandlerResult HandleRequest(TRequest request);

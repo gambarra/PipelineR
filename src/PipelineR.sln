@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeR", "PipeR\PipeR.csproj", "{E64DFABE-255F-4884-A334-260D6E9AD0E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeR", "PipelineR\PipelineR.csproj", "{E64DFABE-255F-4884-A334-260D6E9AD0E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

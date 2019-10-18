@@ -1,4 +1,4 @@
-﻿namespace PipeR
+﻿namespace PipelineR
 {
     public abstract class BaseContext
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PipeR
+namespace PipelineR
 {
     public class RequestHandlerResult
     {

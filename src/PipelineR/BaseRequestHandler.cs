@@ -1,4 +1,4 @@
-﻿namespace PipeR
+﻿namespace PipelineR
 {
     public abstract class BaseRequestHandler<TContext, TRequest> : IRequestHandler<TContext, TRequest>
         where TContext : BaseContext

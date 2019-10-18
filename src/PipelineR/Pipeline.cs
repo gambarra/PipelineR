@@ -1,4 +1,4 @@
-﻿namespace PipeR
+﻿namespace PipelineR
 {
     public class Pipeline<TContext, TRequest> : IPipeline<TContext, TRequest> where TContext : BaseContext
     {

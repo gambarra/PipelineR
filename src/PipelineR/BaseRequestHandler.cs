@@ -19,12 +19,14 @@
             return this.Context.Response;
         }
 
-        protected RequestHandlerResult Abort(string errorMessage)
-            => this.Context.Response = new RequestHandlerResult(errorMessage);
+        protected RequestHandlerResult Abort(string errorMessage, int statusCode = 0)
+            => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode);
 
+        protected RequestHandlerResult Abort(object errorMessage, int statusCode = 0)
+             => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode, false);
 
-        protected RequestHandlerResult Finish(object result)
-            => this.Context.Response = new RequestHandlerResult(result);
+        protected RequestHandlerResult Finish(object result, int statusCode = 0)
+            => this.Context.Response = new RequestHandlerResult(result, statusCode);
 
 
         public abstract RequestHandlerResult HandleRequest(TRequest request);

@@ -4,25 +4,35 @@ namespace PipelineR
 {
     public class RequestHandlerResult
     {
-        public RequestHandlerResult(IReadOnlyCollection<string> errors)
-        {
-            this.Errors = errors;
-            this._success = false;
-        }
-
-        public RequestHandlerResult(string error) : this(new List<string>() {error})
-        {
-        }
-
-        public RequestHandlerResult(object result)
-        {
-            this._result = result;
-        }
-
         private readonly bool _success = true;
 
         private readonly object _result;
+
         public IReadOnlyCollection<string> Errors { private set; get; }
+
+        public int StatusCode { get; private set; }
+
+        public RequestHandlerResult(IReadOnlyCollection<string> errors, int statusCode = 0)
+        {
+            this.Errors = errors;
+            this._success = false;
+            this.StatusCode = statusCode;
+        }
+
+        public RequestHandlerResult(string error, int statusCode)
+        {
+            this.Errors = new List<string>() { error };
+            this._success = false;
+            this.StatusCode = statusCode;
+        }
+
+        public RequestHandlerResult(object result, int statusCode, bool isSuccessful = true)
+        {
+            this._result = result;
+            this._success = isSuccessful;
+            this.StatusCode = statusCode;
+        }
+
 
         public bool IsSuccess() => _success;
 

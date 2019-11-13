@@ -10,7 +10,7 @@ namespace PipelineR
 
         public IReadOnlyCollection<string> Errors { private set; get; }
 
-        public int StatusCode { get; set; }
+        public int StatusCode { get; private set; }
 
         public RequestHandlerResult(IReadOnlyCollection<string> errors, int statusCode = 0)
         {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using FluentValidation;
 
 namespace PipelineR
 {
@@ -6,6 +8,7 @@ namespace PipelineR
     {
         private IRequestHandler<TContext, TRequest> _requestHandler;
         private IRequestHandler<TContext, TRequest> _finallyRequestHandler;
+        private IValidator<TRequest> _validator;
 
         public static Pipeline<TContext, TRequest> Build()
         {
@@ -31,11 +34,23 @@ namespace PipelineR
 
             return this;
         }
-
+        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator)
+        {
+            _validator = validator;
+            return this;
+        }
 
 
         public RequestHandlerResult Execute(TRequest request)
         {
+            if (this._validator != null)
+            {
+                var validateResult = this._validator.Validate(request);
+
+                if(validateResult.IsValid==false)
+                    return new RequestHandlerResult(validateResult.Errors.Select(p=>p.ErrorMessage).ToList());
+            }
+
             if(this._requestHandler==null)
                 throw new ArgumentNullException("No started handlers");
 

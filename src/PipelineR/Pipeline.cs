@@ -1,8 +1,11 @@
-﻿namespace PipelineR
+﻿using System;
+
+namespace PipelineR
 {
     public class Pipeline<TContext, TRequest> : IPipeline<TContext, TRequest> where TContext : BaseContext
     {
         private IRequestHandler<TContext, TRequest> _requestHandler;
+        private IRequestHandler<TContext, TRequest> _finallyRequestHandler;
 
         public static Pipeline<TContext, TRequest> Build()
         {
@@ -22,11 +25,28 @@
 
             return this;
         }
+        public Pipeline<TContext, TRequest> AddFinally(IRequestHandler<TContext, TRequest> requestHandler)
+        {
+            _finallyRequestHandler = requestHandler;
+
+            return this;
+        }
+
+
 
         public RequestHandlerResult Execute(TRequest request)
         {
+            if(this._requestHandler==null)
+                throw new ArgumentNullException("No started handlers");
+
             this._requestHandler.Context.Request = request;
-            return this._requestHandler.HandleRequest(request);
+
+            var result= this._requestHandler.HandleRequest(request);
+
+            if (this._finallyRequestHandler != null)
+                result = this._finallyRequestHandler.HandleRequest(request);
+
+            return result;
         }
 
         private IRequestHandler<TContext, TRequest> GetLastRequestHandler(

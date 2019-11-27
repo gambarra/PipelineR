@@ -47,8 +47,12 @@ namespace PipelineR
             {
                 var validateResult = this._validator.Validate(request);
 
-                if(validateResult.IsValid==false)
-                    return new RequestHandlerResult(validateResult.Errors.Select(p=>p.ErrorMessage).ToList());
+                if (validateResult.IsValid == false)
+                {
+                    var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
+                    return new RequestHandlerResult(errors);
+                }
+                    
             }
 
             if(this._requestHandler==null)

@@ -8,20 +8,21 @@ namespace PipelineR
 
         private readonly object _result;
 
-        public IReadOnlyCollection<string> Errors { private set; get; }
+        public IReadOnlyCollection<ErrorResult> Errors { private set; get; }
+
 
         public int StatusCode { get; private set; }
 
-        public RequestHandlerResult(IReadOnlyCollection<string> errors, int statusCode = 0)
+        public RequestHandlerResult(IReadOnlyCollection<ErrorResult> errors, int statusCode = 0)
         {
             this.Errors = errors;
             this._success = false;
             this.StatusCode = statusCode;
         }
 
-        public RequestHandlerResult(string error, int statusCode)
+        public RequestHandlerResult(ErrorResult error, int statusCode)
         {
-            this.Errors = new List<string>() { error };
+            this.Errors = new List<ErrorResult>() { error };
             this._success = false;
             this.StatusCode = statusCode;
         }

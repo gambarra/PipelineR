@@ -28,6 +28,7 @@ namespace PipelineR
         public string Source { get; private set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; private set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Exception Exception { get; private set; }
 
     }

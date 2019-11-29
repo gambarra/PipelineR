@@ -34,8 +34,7 @@ namespace PipelineR
 
             return this;
         }
-        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator)
-        {
+        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator) {
             _validator = validator;
             return this;
         }
@@ -50,7 +49,7 @@ namespace PipelineR
                 if (validateResult.IsValid == false)
                 {
                     var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
-                    return new RequestHandlerResult(errors);
+                    return new RequestHandlerResult(errors, 412);
                 }
                     
             }

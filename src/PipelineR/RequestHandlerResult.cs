@@ -20,9 +20,9 @@ namespace PipelineR
             this.StatusCode = statusCode;
         }
 
-        public RequestHandlerResult(ErrorResult error, int statusCode)
+        public RequestHandlerResult(ErrorResult errorResult, int statusCode)
         {
-            this.Errors = new List<ErrorResult>() { error };
+            this.Errors = new List<ErrorResult>() { errorResult };
             this._success = false;
             this.StatusCode = statusCode;
         }

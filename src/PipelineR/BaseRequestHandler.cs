@@ -25,8 +25,12 @@
         protected RequestHandlerResult Abort(object errorMessage, int statusCode = 0)
              => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode, false);
 
+        protected RequestHandlerResult Abort(ErrorResult errorResult, int statusCode = 0)
+            => this.Context.Response = new RequestHandlerResult(errorResult, statusCode);
+
         protected RequestHandlerResult Finish(object result, int statusCode = 0)
             => this.Context.Response = new RequestHandlerResult(result, statusCode);
+
 
 
         public abstract RequestHandlerResult HandleRequest(TRequest request);

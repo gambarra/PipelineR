@@ -1,4 +1,7 @@
-﻿namespace PipelineR
+﻿using System;
+using System.Linq.Expressions;
+
+namespace PipelineR
 {
     public abstract class BaseRequestHandler<TContext, TRequest> : IRequestHandler<TContext, TRequest>
         where TContext : BaseContext
@@ -11,10 +14,19 @@
             this.Context = context;
         }
 
-        protected RequestHandlerResult Next(TRequest request)
+        public RequestHandlerResult Next(TRequest request)
         {
             if (NextRequestHandler != null)
-                this.Context.Response = NextRequestHandler.HandleRequest(request);
+            {
+                if (NextRequestHandler.Condition != null)
+                {
+                    if (NextRequestHandler.Condition.IsSatisfied(this.Context, request))
+                        this.Context.Response = NextRequestHandler.HandleRequest(request);
+                }
+         
+                else
+                    this.Context.Response = NextRequestHandler.HandleRequest(request);
+            }
 
             return this.Context.Response;
         }
@@ -31,13 +43,14 @@
         protected RequestHandlerResult Finish(object result, int statusCode = 0)
             => this.Context.Response = new RequestHandlerResult(result, statusCode);
 
-
+        public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
 
         public abstract RequestHandlerResult HandleRequest(TRequest request);
     }
 
     public interface IRequestHandler<TContext, TRequest> where TContext : BaseContext
     {
+        Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
         RequestHandlerResult HandleRequest(TRequest request);
         IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
         TContext Context { get; }

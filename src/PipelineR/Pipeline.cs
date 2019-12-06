@@ -34,7 +34,8 @@ namespace PipelineR
 
             return this;
         }
-        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator) {
+        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator)
+        {
             _validator = validator;
             return this;
         }
@@ -51,18 +52,44 @@ namespace PipelineR
                     var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
                     return new RequestHandlerResult(errors, 412);
                 }
-                    
+
             }
 
-            if(this._requestHandler==null)
+            if (this._requestHandler == null)
                 throw new ArgumentNullException("No started handlers");
 
             this._requestHandler.Context.Request = request;
 
-            var result= this._requestHandler.HandleRequest(request);
+            RequestHandlerResult result = null;
 
+            result = ExecuteHandlers(request);
+
+            result = ExecuteFinallyHandler(request, result);
+
+            return result;
+        }
+
+        private RequestHandlerResult ExecuteFinallyHandler(TRequest request, RequestHandlerResult result)
+        {
             if (this._finallyRequestHandler != null)
                 result = this._finallyRequestHandler.HandleRequest(request);
+            return result;
+        }
+
+        private RequestHandlerResult ExecuteHandlers(TRequest request)
+        {
+
+            RequestHandlerResult result = null;
+            if (this._requestHandler.Condition != null)
+            {
+                result = _requestHandler.Condition.IsSatisfied(_requestHandler.Context, request)
+                    ? _requestHandler.HandleRequest(request)
+                    : ((BaseRequestHandler<TContext, TRequest>) _requestHandler).Next(request);
+            }
+            else
+            {
+                result = this._requestHandler.HandleRequest(request);
+            }
 
             return result;
         }
@@ -72,7 +99,7 @@ namespace PipelineR
         {
             if (requestHandler.NextRequestHandler != null)
                 return GetLastRequestHandler(requestHandler.NextRequestHandler);
-            
+
             return requestHandler;
         }
     }

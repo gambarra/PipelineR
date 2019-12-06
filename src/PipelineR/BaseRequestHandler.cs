@@ -16,16 +16,9 @@ namespace PipelineR
 
         public RequestHandlerResult Next(TRequest request)
         {
-            if (NextRequestHandler != null)
+            if (this.NextRequestHandler != null)
             {
-                if (NextRequestHandler.Condition != null)
-                {
-                    if (NextRequestHandler.Condition.IsSatisfied(this.Context, request))
-                        this.Context.Response = NextRequestHandler.HandleRequest(request);
-                }
-         
-                else
-                    this.Context.Response = NextRequestHandler.HandleRequest(request);
+                this.Context.Response= RequestHandlerOrchestrator.ExecuteHandler(request, this.NextRequestHandler);
             }
 
             return this.Context.Response;

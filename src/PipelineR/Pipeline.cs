@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PipelineR
 {
@@ -9,9 +12,15 @@ namespace PipelineR
         private IRequestHandler<TContext, TRequest> _requestHandler;
         private IRequestHandler<TContext, TRequest> _finallyRequestHandler;
         private IValidator<TRequest> _validator;
+        private static IServiceProvider _serviceProvider;
 
         public static Pipeline<TContext, TRequest> Build()
         {
+            return new Pipeline<TContext, TRequest>();
+        }
+        public static Pipeline<TContext, TRequest> Build(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
             return new Pipeline<TContext, TRequest>();
         }
 
@@ -28,18 +37,38 @@ namespace PipelineR
 
             return this;
         }
+        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>(Expression<Func<TContext, TRequest, bool>> condition=null)
+        {
+         
+            var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
+            requestHandler.Condition = condition;
+
+            return this.AddNext(requestHandler);
+        }
+
         public Pipeline<TContext, TRequest> AddFinally(IRequestHandler<TContext, TRequest> requestHandler)
         {
             _finallyRequestHandler = requestHandler;
-
             return this;
         }
+        public Pipeline<TContext, TRequest> AddFinally<TRequestHandler>()
+        {
+            var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
+            return this.AddFinally(requestHandler);
+        }
+
         public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator)
         {
             _validator = validator;
             return this;
         }
 
+        public Pipeline<TContext, TRequest> AddValidator<TValidator>()
+        {
+    
+            var validator = (IValidator< TRequest>)_serviceProvider.GetService<TValidator>();
+            return this.AddValidator(validator);
+        }
 
         public RequestHandlerResult Execute(TRequest request)
         {
@@ -62,7 +91,7 @@ namespace PipelineR
 
             RequestHandlerResult result = null;
 
-            result = ExecuteHandlers(request);
+            result = RequestHandlerOrchestrator.ExecuteHandler(request, this._requestHandler);
 
             result = ExecuteFinallyHandler(request, result);
 
@@ -76,23 +105,7 @@ namespace PipelineR
             return result;
         }
 
-        private RequestHandlerResult ExecuteHandlers(TRequest request)
-        {
-
-            RequestHandlerResult result = null;
-            if (this._requestHandler.Condition != null)
-            {
-                result = _requestHandler.Condition.IsSatisfied(_requestHandler.Context, request)
-                    ? _requestHandler.HandleRequest(request)
-                    : ((BaseRequestHandler<TContext, TRequest>) _requestHandler).Next(request);
-            }
-            else
-            {
-                result = this._requestHandler.HandleRequest(request);
-            }
-
-            return result;
-        }
+   
 
         private IRequestHandler<TContext, TRequest> GetLastRequestHandler(
             IRequestHandler<TContext, TRequest> requestHandler)

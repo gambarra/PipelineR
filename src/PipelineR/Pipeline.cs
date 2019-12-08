@@ -54,7 +54,7 @@ namespace PipelineR
             return this.AddNext(requestHandler);
         }
 
-        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>() => AddNext(null);
+        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>() => AddNext<TRequestHandler>(null);
         public Pipeline<TContext, TRequest> AddFinally(IRequestHandler<TContext, TRequest> requestHandler)
         {
             _finallyRequestHandler = requestHandler;

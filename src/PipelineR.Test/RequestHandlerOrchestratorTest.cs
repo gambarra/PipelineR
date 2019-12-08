@@ -12,7 +12,7 @@ namespace PipelineR.Test
   
     public class RequestHandlerOrchestratorTest
     {
-        public Expression<Func<ContextSample,SampleRequest, bool>> Condition()
+        public static Expression<Func<ContextSample,SampleRequest, bool>> Condition()
         {
             return (context, request) => request.Name == "name_test";
         }
@@ -31,7 +31,7 @@ namespace PipelineR.Test
         [Fact]
         public void ExecuteHandler_RequestHandlerWithConditionTrue_Execute()
         {
-            var request = new SampleRequest()
+            var request = new SampleRequest
             {
                 Name = "name_test"
             };
@@ -48,7 +48,7 @@ namespace PipelineR.Test
         [Fact]
         public void ExecuteHandler_RequestHandlerWithConditionFalse_NotExecute()
         {
-            var request = new SampleRequest()
+            var request = new SampleRequest
             {
                 Name = "name_test2"
             };

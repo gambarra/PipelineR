@@ -21,7 +21,7 @@ namespace PipelineR
 
         public Pipeline()
         {
-            
+
         }
         public static Pipeline<TContext, TRequest> Configure()
         {
@@ -47,7 +47,7 @@ namespace PipelineR
         }
         public Pipeline<TContext, TRequest> AddNext<TRequestHandler>(Expression<Func<TContext, TRequest, bool>> condition)
         {
-         
+
             var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
             requestHandler.Condition = condition;
 
@@ -74,8 +74,8 @@ namespace PipelineR
 
         public Pipeline<TContext, TRequest> AddValidator<TValidator>()
         {
-    
-            var validator = (IValidator< TRequest>)_serviceProvider.GetService<TValidator>();
+
+            var validator = (IValidator<TRequest>)_serviceProvider.GetService<TValidator>();
             return this.AddValidator(validator);
         }
 
@@ -97,20 +97,18 @@ namespace PipelineR
             {
                 throw new ArgumentNullException("No started handlers");
             }
-              
+
 
             this._requestHandler.Context.Request = request;
 
-            RequestHandlerResult result = null;
+            var result = RequestHandlerOrchestrator.ExecuteHandler(request, this._requestHandler);
 
-            result = RequestHandlerOrchestrator.ExecuteHandler(request, this._requestHandler);
-
-            result = ExecuteFinallyHandler(request);
+            result = ExecuteFinallyHandler(request) ?? result;
 
             return result;
         }
 
-        private RequestHandlerResult ExecuteFinallyHandler(TRequest request )
+        private RequestHandlerResult ExecuteFinallyHandler(TRequest request)
         {
 
             RequestHandlerResult result = null;
@@ -119,11 +117,11 @@ namespace PipelineR
             {
                 result = this._finallyRequestHandler.HandleRequest(request);
             }
-                
+
             return result;
         }
 
-   
+
 
         private static IRequestHandler<TContext, TRequest> GetLastRequestHandler(
             IRequestHandler<TContext, TRequest> requestHandler)
@@ -132,7 +130,7 @@ namespace PipelineR
             {
                 return GetLastRequestHandler(requestHandler.NextRequestHandler);
             }
-                
+
 
             return requestHandler;
         }

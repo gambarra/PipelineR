@@ -46,9 +46,9 @@ namespace PipelineR
         protected RequestHandlerResult Abort(ErrorResult errorResult)
             => this.Context.Response = new RequestHandlerResult(errorResult, 0);
         protected RequestHandlerResult Finish(object result, int statusCode )
-            => this.Context.Response = new RequestHandlerResult(result, statusCode);
+            => this.Context.Response = new RequestHandlerResult(result, statusCode,true);
         protected RequestHandlerResult Finish(object result)
-            => this.Context.Response = new RequestHandlerResult(result, 0);
+            => this.Context.Response = new RequestHandlerResult(result, 0,true);
 
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
 

@@ -36,7 +36,7 @@ namespace PipelineR.Test
                 Name = "name_test"
             };
 
-            var requestHandler = new Mock<FirstRequestHandler>(new ContextSample(),this.Condition());
+            var requestHandler = new Mock<FirstRequestHandler>(new ContextSample(),Condition());
             
             RequestHandlerOrchestrator.ExecuteHandler(request, requestHandler.Object);
 
@@ -53,7 +53,7 @@ namespace PipelineR.Test
                 Name = "name_test2"
             };
 
-            var requestHandler = new Mock<FirstRequestHandler>(new ContextSample(), this.Condition());
+            var requestHandler = new Mock<FirstRequestHandler>(new ContextSample(), Condition());
 
             RequestHandlerOrchestrator.ExecuteHandler(request, requestHandler.Object);
 

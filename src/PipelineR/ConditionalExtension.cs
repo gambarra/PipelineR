@@ -14,7 +14,7 @@ namespace PipelineR
         public static IRequestHandler<TContext, TRequest> When<TContext, TRequest>(
             this IRequestHandler<TContext, TRequest> requestHandler, Expression<Func<TContext, TRequest, bool>> condition) where TContext : BaseContext
         {
-            ((BaseRequestHandler<TContext, TRequest>) requestHandler).Condition = condition;
+            ((RequestHandler<TContext, TRequest>) requestHandler).Condition = condition;
             return requestHandler;
         }
    

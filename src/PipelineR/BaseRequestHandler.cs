@@ -3,15 +3,20 @@ using System.Linq.Expressions;
 
 namespace PipelineR
 {
-    public abstract class BaseRequestHandler<TContext, TRequest> : IRequestHandler<TContext, TRequest>
+    public abstract class RequestHandler<TContext, TRequest> : IRequestHandler<TContext, TRequest>
         where TContext : BaseContext
     {
         public IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
         public TContext Context { get; private set; }
 
-        protected BaseRequestHandler(TContext context)
+        protected RequestHandler(TContext context)
         {
             this.Context = context;
+        }
+
+        protected RequestHandler(TContext context, Expression<Func<TContext, TRequest, bool>> condition ):this(context)
+        {
+            this.Condition = condition;
         }
 
         public RequestHandlerResult Next(TRequest request)
@@ -24,17 +29,26 @@ namespace PipelineR
             return this.Context.Response;
         }
 
-        protected RequestHandlerResult Abort(string errorMessage, int statusCode = 0)
-            => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode);
+        protected RequestHandlerResult Abort(string errorMessage, int statusCode )
+            => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode,false);
 
-        protected RequestHandlerResult Abort(object errorMessage, int statusCode = 0)
-             => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode, false);
+        protected RequestHandlerResult Abort(string errorMessage)
+            => this.Context.Response = new RequestHandlerResult(errorMessage, 0,false);
 
-        protected RequestHandlerResult Abort(ErrorResult errorResult, int statusCode = 0)
+        protected RequestHandlerResult Abort(object errorResult, int statusCode )
+             => this.Context.Response = new RequestHandlerResult(errorResult, statusCode, false);
+
+        protected RequestHandlerResult Abort(object errorResult)
+            => this.Context.Response = new RequestHandlerResult(errorResult, 0, false);
+
+        protected RequestHandlerResult Abort(ErrorResult errorResult, int statusCode )
             => this.Context.Response = new RequestHandlerResult(errorResult, statusCode);
-
-        protected RequestHandlerResult Finish(object result, int statusCode = 0)
+        protected RequestHandlerResult Abort(ErrorResult errorResult)
+            => this.Context.Response = new RequestHandlerResult(errorResult, 0);
+        protected RequestHandlerResult Finish(object result, int statusCode )
             => this.Context.Response = new RequestHandlerResult(result, statusCode);
+        protected RequestHandlerResult Finish(object result)
+            => this.Context.Response = new RequestHandlerResult(result, 0);
 
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
 

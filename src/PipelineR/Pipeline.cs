@@ -12,16 +12,24 @@ namespace PipelineR
         private IRequestHandler<TContext, TRequest> _requestHandler;
         private IRequestHandler<TContext, TRequest> _finallyRequestHandler;
         private IValidator<TRequest> _validator;
-        private static IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
-        public static Pipeline<TContext, TRequest> Build()
+        private Pipeline(IServiceProvider serviceProvider)
+        {
+            this._serviceProvider = serviceProvider;
+        }
+
+        public Pipeline()
+        {
+            
+        }
+        public static Pipeline<TContext, TRequest> Configure()
         {
             return new Pipeline<TContext, TRequest>();
         }
-        public static Pipeline<TContext, TRequest> Build(IServiceProvider serviceProvider)
+        public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
-            return new Pipeline<TContext, TRequest>();
+            return new Pipeline<TContext, TRequest>(serviceProvider);
         }
 
         public Pipeline<TContext, TRequest> AddNext(IRequestHandler<TContext, TRequest> requestHandler)
@@ -32,12 +40,12 @@ namespace PipelineR
             }
             else
             {
-                this.GetLastRequestHandler(this._requestHandler).NextRequestHandler = requestHandler;
+                GetLastRequestHandler(this._requestHandler).NextRequestHandler = requestHandler;
             }
 
             return this;
         }
-        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>(Expression<Func<TContext, TRequest, bool>> condition=null)
+        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>(Expression<Func<TContext, TRequest, bool>> condition)
         {
          
             var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
@@ -46,6 +54,7 @@ namespace PipelineR
             return this.AddNext(requestHandler);
         }
 
+        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>() => AddNext<TRequestHandler>(null);
         public Pipeline<TContext, TRequest> AddFinally(IRequestHandler<TContext, TRequest> requestHandler)
         {
             _finallyRequestHandler = requestHandler;
@@ -85,7 +94,10 @@ namespace PipelineR
             }
 
             if (this._requestHandler == null)
+            {
                 throw new ArgumentNullException("No started handlers");
+            }
+              
 
             this._requestHandler.Context.Request = request;
 
@@ -101,17 +113,23 @@ namespace PipelineR
         private RequestHandlerResult ExecuteFinallyHandler(TRequest request, RequestHandlerResult result)
         {
             if (this._finallyRequestHandler != null)
+            {
                 result = this._finallyRequestHandler.HandleRequest(request);
+            }
+                
             return result;
         }
 
    
 
-        private IRequestHandler<TContext, TRequest> GetLastRequestHandler(
+        private static IRequestHandler<TContext, TRequest> GetLastRequestHandler(
             IRequestHandler<TContext, TRequest> requestHandler)
         {
             if (requestHandler.NextRequestHandler != null)
+            {
                 return GetLastRequestHandler(requestHandler.NextRequestHandler);
+            }
+                
 
             return requestHandler;
         }

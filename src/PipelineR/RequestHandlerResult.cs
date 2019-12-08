@@ -25,7 +25,7 @@ namespace PipelineR
 
         public RequestHandlerResult(ErrorResult errorResult, int statusCode)
         {
-            this.Errors = new List<ErrorResult>() { errorResult };
+            this.Errors = new List<ErrorResult> { errorResult };
             this._success = false;
             this.StatusCode = statusCode;
         }

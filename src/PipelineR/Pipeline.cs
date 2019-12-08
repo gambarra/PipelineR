@@ -105,13 +105,16 @@ namespace PipelineR
 
             result = RequestHandlerOrchestrator.ExecuteHandler(request, this._requestHandler);
 
-            result = ExecuteFinallyHandler(request, result);
+            result = ExecuteFinallyHandler(request);
 
             return result;
         }
 
-        private RequestHandlerResult ExecuteFinallyHandler(TRequest request, RequestHandlerResult result)
+        private RequestHandlerResult ExecuteFinallyHandler(TRequest request )
         {
+
+            RequestHandlerResult result = null;
+
             if (this._finallyRequestHandler != null)
             {
                 result = this._finallyRequestHandler.HandleRequest(request);

@@ -37,6 +37,8 @@ namespace Testing
         {
             services.AddScoped(p => new CarContext());
             services.AddScoped<ICreateCarStep, CreateCarStep>();
+            services.AddScoped<ISearchCarStep, SearchCarStep>();
+            services.AddScoped<IEndCarStep, EndCarStep>();
 
             services.AddScoped<ICarPipelineBuilder, CarPipelineBuilder>();
             //services.AddScoped(provider => provider.GetService<ICarPipelineBuilder>().Create());

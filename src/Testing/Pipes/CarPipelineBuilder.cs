@@ -22,7 +22,9 @@ namespace Testing.Pipes
         {
             return Pipeline<CarContext, CarCreate>
                     .Configure(ServiceProvider)
+                    .AddNext<ISearchCarStep>()
                     .AddNext<ICreateCarStep>()
+                    .AddFinally<IEndCarStep>()
                     .Execute(create);
         }
     }

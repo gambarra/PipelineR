@@ -17,10 +17,9 @@ namespace Testing.Pipes
             this.Context = context;
         }
 
-        public override RequestHandlerResult HandleStep()
+        public override StepHandlerResult HandleStep()
         {
-            Console.WriteLine("teste");
-            this.Context.Response = new RequestHandlerResult("teste", 200, true);
+            this.Context.Response = new StepHandlerResult("CreateCarStep", 200, true);
             return this.Continue();
         }
     }

@@ -21,11 +21,14 @@ namespace Testing.Controllers
         //    CreateCarPipeline = createCarPipeline;
         //}
 
-        [HttpGet]
-        public IActionResult Testing()
+        [HttpGet("{name}")]
+        public IActionResult Testing([FromRoute] string name)
         {
-            //var resp = CreateCarPipeline.Execute(new CarCreate());
-            var resp = CarPipeline.Create(new CarCreate());
+            var req = new CarCreate()
+            {
+                Nome = name
+            };
+            var resp = CarPipeline.Create(req);
             return new ObjectResult(resp.Result()) { StatusCode = resp.StatusCode };
         }
     }

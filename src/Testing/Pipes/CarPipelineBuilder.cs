@@ -6,7 +6,7 @@ namespace Testing.Pipes
 {
     public interface ICarPipelineBuilder
     {
-        RequestHandlerResult Create(CarCreate create);
+        StepHandlerResult Create(CarCreate create);
     }
 
     public class CarPipelineBuilder : ICarPipelineBuilder
@@ -18,13 +18,18 @@ namespace Testing.Pipes
             ServiceProvider = serviceProvider;
         }
 
-        public RequestHandlerResult Create(CarCreate create)
+        public StepHandlerResult Create(CarCreate create)
         {
             return Pipeline<CarContext, CarCreate>
                     .Configure(ServiceProvider)
-                    .AddNext<ISearchCarStep>()
-                    .AddNext<ICreateCarStep>()
-                    .AddFinally<IEndCarStep>()
+                    .AddStep<ISearchCarStep>()
+                        .When(p => {
+                            var req = (CarCreate)p.Request;
+                            return req.Nome != "yuri";
+                            })
+                    .AddStep<ICreateCarStep>()
+                        .When<ISearchCondition>()
+                    //.AddFinally<IEndCarStep>()
                     .Execute(create);
         }
     }

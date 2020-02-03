@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Testing.Pipes
+﻿namespace Testing.Pipes
 {
     public class CarCreate
     {
+        public string Nome { get; set; }
     }
 }

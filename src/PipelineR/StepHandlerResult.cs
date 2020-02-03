@@ -2,7 +2,7 @@
 
 namespace PipelineR
 {
-    public class RequestHandlerResult
+    public class StepHandlerResult
     {
         private readonly bool _success;
 
@@ -13,24 +13,24 @@ namespace PipelineR
 
         public int StatusCode { get; private set; }
 
-        public RequestHandlerResult(IReadOnlyCollection<ErrorResult> errors, int statusCode)
+        public StepHandlerResult(IReadOnlyCollection<ErrorResult> errors, int statusCode)
         {
             this.Errors = errors;
             this._success = false;
             this.StatusCode = statusCode;
         }
-        public RequestHandlerResult(IReadOnlyCollection<ErrorResult> errors) : this(errors, 0)
+        public StepHandlerResult(IReadOnlyCollection<ErrorResult> errors) : this(errors, 0)
         {
         }
 
-        public RequestHandlerResult(ErrorResult errorResult, int statusCode)
+        public StepHandlerResult(ErrorResult errorResult, int statusCode)
         {
             this.Errors = new List<ErrorResult> { errorResult };
             this._success = false;
             this.StatusCode = statusCode;
         }
 
-        public RequestHandlerResult(object result, int statusCode, bool isSuccessful)
+        public StepHandlerResult(object result, int statusCode, bool isSuccessful)
         {
             this._result = result;
             this._success = isSuccessful;

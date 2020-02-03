@@ -9,7 +9,7 @@ namespace Testing.Pipes
         {
         }
 
-        public override RequestHandlerResult HandleStep()
+        public override StepHandlerResult HandleStep()
         {
             return this.Finish("finally");
         }

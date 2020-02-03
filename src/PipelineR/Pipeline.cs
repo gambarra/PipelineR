@@ -1,143 +1,143 @@
-﻿//using System;
-//using System.Linq;
-//using System.Linq.Expressions;
-//using System.Runtime.CompilerServices;
-//using FluentValidation;
-//using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using PipelineR.Interface;
+using System;
+using System.Linq;
 
-//namespace PipelineR
-//{
-//    public class Pipeline<TContext, TRequest> : IPipeline<TContext, TRequest> where TContext : BaseContext
-//    {
-//        private IRequestHandler<TContext, TRequest> _requestHandler;
-//        private IRequestHandler<TContext, TRequest> _finallyRequestHandler;
-//        private IValidator<TRequest> _validator;
-//        private readonly IServiceProvider _serviceProvider;
+namespace PipelineR.Base
+{
+    public class Pipeline<TContext, TRequest> : IPipeline<TContext, TRequest> where TContext : BaseContext
+    {
+        private readonly IServiceProvider _serviceProvider;
 
-//        private Pipeline(IServiceProvider serviceProvider)
-//        {
-//            this._serviceProvider = serviceProvider;
-//        }
+        private IStepHandler<TContext> _finallyStepHandler;
+        private IStepHandler<TContext> _stepHandler;
+        private IValidator<TRequest> _validator;
 
-//        public Pipeline()
-//        {
+        public Pipeline()
+        {
+        }
 
-//        }
-//        public static Pipeline<TContext, TRequest> Configure()
-//        {
-//            return new Pipeline<TContext, TRequest>();
-//        }
-//        public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider)
-//        {
-//            return new Pipeline<TContext, TRequest>(serviceProvider);
-//        }
+        private Pipeline(IServiceProvider serviceProvider)
+        {
+            this._serviceProvider = serviceProvider;
+        }
 
-//        public Pipeline<TContext, TRequest> AddNext(IRequestHandler<TContext, TRequest> requestHandler)
-//        {
-//            if (this._requestHandler == null)
-//            {
-//                this._requestHandler = requestHandler;
-//            }
-//            else
-//            {
-//                GetLastRequestHandler(this._requestHandler).NextRequestHandler = requestHandler;
-//            }
+        public static Pipeline<TContext, TRequest> Configure()
+        {
+            return new Pipeline<TContext, TRequest>();
+        }
 
-//            return this;
-//        }
-//        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>(Expression<Func<TContext, TRequest, bool>> condition)
-//        {
+        public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider)
+        {
+            return new Pipeline<TContext, TRequest>(serviceProvider);
+        }
 
-//            var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
-//            requestHandler.Condition = condition;
+        public Pipeline<TContext, TRequest> AddStep(IStepHandler<TContext> stepHandler)
+        {
+            if (this._stepHandler == null)
+                this._stepHandler = stepHandler;
+            else
+                GetLastStepHandler(this._stepHandler).NextStep = stepHandler;
 
-//            return this.AddNext(requestHandler);
-//        }
+            return this;
+        }
 
-//        public Pipeline<TContext, TRequest> AddNext<TRequestHandler>() => AddNext<TRequestHandler>(null);
-//        public Pipeline<TContext, TRequest> AddFinally(IRequestHandler<TContext, TRequest> requestHandler)
-//        {
-//            _finallyRequestHandler = requestHandler;
-//            return this;
-//        }
-//        public Pipeline<TContext, TRequest> AddFinally<TRequestHandler>()
-//        {
-//            var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
-//            return this.AddFinally(requestHandler);
-//        }
+        public Pipeline<TContext, TRequest> When(Func<TContext, bool> func)
+        {
+            var lastStepHandler = GetLastStepHandler(this._stepHandler);
+            lastStepHandler.Condition = func;
+            return this;
+        }
 
-//        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator)
-//        {
-//            _validator = validator;
-//            return this;
-//        }
+        public Pipeline<TContext, TRequest> AddStep(ICondition<TContext> condition)
+        {
+            var lastStepHandler = GetLastStepHandler(this._stepHandler);
+            lastStepHandler.Condition = condition.When();
 
-//        public Pipeline<TContext, TRequest> AddValidator<TValidator>()
-//        {
+            return this;
+        }
 
-//            var validator = (IValidator<TRequest>)_serviceProvider.GetService<TValidator>();
-//            return this.AddValidator(validator);
-//        }
+        public Pipeline<TContext, TRequest> When<TCondition>()
+        {
+            var instance = (ICondition<TContext>)this._serviceProvider.GetService<TCondition>();
+            var lastStepHandler = GetLastStepHandler(this._stepHandler);
+            lastStepHandler.Condition = instance.When();
+            return this;
+        }
 
-//        public RequestHandlerResult Execute(TRequest request)
-//        {
-//            if (this._validator != null)
-//            {
-//                var validateResult = this._validator.Validate(request);
+        public Pipeline<TContext, TRequest> AddStep<TStepHandler>()
+        {
+            var stepHandler = (IStepHandler<TContext>)this._serviceProvider.GetService<TStepHandler>();
+            return this.AddStep(stepHandler);
+        }
 
-//                if (validateResult.IsValid == false)
-//                {
-//                    var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
-//                    return new RequestHandlerResult(errors, 412);
-//                }
+        public Pipeline<TContext, TRequest> AddValidator(IValidator<TRequest> validator)
+        {
+            _validator = validator;
+            return this;
+        }
 
-//            }
+        public Pipeline<TContext, TRequest> AddValidator<TValidator>()
+        {
+            var validator = (IValidator<TRequest>)_serviceProvider.GetService<TValidator>();
+            return this.AddValidator(validator);
+        }
 
-//            if (this._requestHandler == null)
-//            {
-//                throw new ArgumentNullException("No started handlers");
-//            }
+        public Pipeline<TContext, TRequest> AddFinally(IStepHandler<TContext> stepHandler)
+        {
+            _finallyStepHandler = stepHandler;
+            return this;
+        }
 
+        public Pipeline<TContext, TRequest> AddFinally<TStepHandler>()
+        {
+            var stepHandler = (IStepHandler<TContext>)_serviceProvider.GetService<TStepHandler>();
+            return this.AddFinally(stepHandler);
+        }
 
-//            this._requestHandler.Context.Request = request;
+        public StepHandlerResult Execute(TRequest request)
+        {
+            if (this._stepHandler is null)
+                throw new ArgumentNullException("No started handlers");
 
-//            var result = RequestHandlerOrchestrator.ExecuteHandler(request, this._requestHandler);
+            if (this._validator != null)
+            {
+                var validateResult = this._validator.Validate(request);
 
-//            result = ExecuteFinallyHandler(request) ?? result;
+                if (!validateResult.IsValid)
+                {
+                    var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
+                    return new StepHandlerResult(errors, 412);
+                }
+            }
 
-//            return result;
-//        }
+            this._stepHandler.Context.Request = request;
 
-//        private RequestHandlerResult ExecuteFinallyHandler(TRequest request)
-//        {
+            var result = StepOrchestrator.ExecuteHandler(this._stepHandler);
 
-//            RequestHandlerResult result = null;
+            result = ExecuteFinallyHandler() ?? result;
 
-//            if (this._finallyRequestHandler != null)
-//            {
-//                result = this._finallyRequestHandler.HandleRequest(request);
-//            }
+            return result;
+        }
 
-//            return result;
-//        }
+        private static IStepHandler<TContext> GetLastStepHandler(
+            IStepHandler<TContext> requestHandler)
+        {
+            if (requestHandler.NextStep != null)
+                return GetLastStepHandler(requestHandler.NextStep);
 
+            return requestHandler;
+        }
 
+        private StepHandlerResult ExecuteFinallyHandler()
+        {
+            StepHandlerResult result = null;
 
-//        private static IRequestHandler<TContext, TRequest> GetLastRequestHandler(
-//            IRequestHandler<TContext, TRequest> requestHandler)
-//        {
-//            if (requestHandler.NextRequestHandler != null)
-//            {
-//                return GetLastRequestHandler(requestHandler.NextRequestHandler);
-//            }
+            if (this._finallyStepHandler != null)
+                result = this._finallyStepHandler.HandleStep();
 
-
-//            return requestHandler;
-//        }
-//    }
-
-//    public interface IPipeline<TContext, in TRequest> where TContext : BaseContext
-//    {
-//        RequestHandlerResult Execute(TRequest request);
-//    }
-//}
+            return result;
+        }
+    }
+}

@@ -40,6 +40,8 @@ namespace Testing
             services.AddScoped<ISearchCarStep, SearchCarStep>();
             services.AddScoped<IEndCarStep, EndCarStep>();
 
+            services.AddScoped<ISearchCondition, SearchCondition>();
+
             services.AddScoped<ICarPipelineBuilder, CarPipelineBuilder>();
             //services.AddScoped(provider => provider.GetService<ICarPipelineBuilder>().Create());
         }

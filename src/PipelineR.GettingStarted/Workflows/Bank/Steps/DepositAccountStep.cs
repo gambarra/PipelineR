@@ -18,9 +18,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank.Steps
         {
             return new Func<BankContext, bool>(p =>
             {
-                var request = p.Request<DepositModel>();
-                return p.AccountId == 10 && request.Amount > 0;
-                //return true;
+                return p.Account != null;
             });
         }
     }

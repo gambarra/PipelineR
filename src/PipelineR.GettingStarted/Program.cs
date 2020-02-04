@@ -24,6 +24,8 @@ namespace PipelineR.GettingStarted
 
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             Startup.AddPipelines(services);
         }
     }

@@ -33,6 +33,13 @@ namespace PipelineR
             return pipeline;
         }
 
+        public static Pipeline<TContext> Configure(IServiceProvider serviceProvider, TContext context)
+        {
+            var pipeline = new Pipeline<TContext>(serviceProvider);
+            pipeline._stepHandler.Context = context;
+            return pipeline;
+        }
+
         public Pipeline<TContext> AddFinally(IStepHandler<TContext> stepHandler)
         {
             _finallyStepHandler = stepHandler;

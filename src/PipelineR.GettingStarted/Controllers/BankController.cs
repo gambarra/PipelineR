@@ -18,8 +18,17 @@ namespace PipelineR.GettingStarted.Controllers
         [HttpGet("{accountKey}")]
         public IActionResult Get([FromRoute] int accountKey)
         {
-            var model = new DepositModel(10, accountKey);
-            var response = _bankPipelineBuilder.Deposit(model);
+            //var model = new DepositModel(10, accountKey);
+            //var response = _bankPipelineBuilder.Deposit(model);
+
+            var model = new CreateAccountModel()
+            {
+                Id = 1,
+                BalanceInCents = 0,
+                OwnerName = "Yuri Pereira"
+            };
+
+            var response = _bankPipelineBuilder.CreateAccount(model);
             return new ObjectResult(response.Errors ?? response.Result()) { StatusCode = response.StatusCode };
         }
     }

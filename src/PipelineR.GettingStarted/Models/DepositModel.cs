@@ -10,5 +10,6 @@
 
         public int Amount { get; set; }
         public int AccountId { get; set; }
+        public int DestinationAccountId { get; set; }
     }
 }

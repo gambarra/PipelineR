@@ -13,6 +13,16 @@ namespace PipelineR.GettingStarted.Workflows.Bank
             ServiceProvider = serviceProvider;
         }
 
+        public StepHandlerResult CreateAccount(CreateAccountModel model)
+        {
+            return Pipeline<BankContext>
+                        .Configure(ServiceProvider)
+                        .AddStep<ISearchAccountStep>()
+                        .AddStep<ICreateAccountStep>()
+                            .When(ctx => ctx.Account != null)
+                        .Execute(model);
+        }
+
         public StepHandlerResult Deposit(DepositModel model)
         {
             return Pipeline<BankContext>
@@ -26,6 +36,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank
     
     public interface IBankPipelineBuilder
     {
+        StepHandlerResult CreateAccount(CreateAccountModel model);
         StepHandlerResult Deposit(DepositModel model);
     }
 }

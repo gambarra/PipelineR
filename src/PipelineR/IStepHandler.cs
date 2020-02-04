@@ -6,7 +6,7 @@ namespace PipelineR
     {
         Func<TContext, bool> Condition { get; set; }
 
-        TContext Context { get; }
+        TContext Context { get; set; }
 
         IStepHandler<TContext> NextStep { get; set; }
 

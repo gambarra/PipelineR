@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PipelineR.Interface
+namespace PipelineR
 {
     public interface ICondition<TContext> where TContext : BaseContext
     {

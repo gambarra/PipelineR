@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PipelineR.Extensions
+namespace PipelineR
 {
     public static class Conditional
     {

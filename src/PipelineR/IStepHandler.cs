@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PipelineR.Interface
+namespace PipelineR
 {
     public interface IStepHandler<TContext> where TContext : class
     {

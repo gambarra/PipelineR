@@ -18,8 +18,10 @@ namespace PipelineR.GettingStarted.Workflows.Bank
             return Pipeline<BankContext>
                         .Configure(ServiceProvider)
                         .AddStep<ISearchAccountStep>()
+                            .SetParameter("Id", model.Id)
+                            .SetParameter("UnsuccessMessage", "Account already exist.")
                         .AddStep<ICreateAccountStep>()
-                            .When(ctx => ctx.Account != null)
+                            .When(ctx => ctx.Account == null)
                         .Execute(model);
         }
 
@@ -27,7 +29,13 @@ namespace PipelineR.GettingStarted.Workflows.Bank
         {
             return Pipeline<BankContext>
                         .Configure(ServiceProvider)
+                            .SetValue(ctx => ctx.AccountId, model.AccountId)
                         .AddStep<ISearchAccountStep>()
+                            .SetParameter("Id", model.AccountId)
+                            .SetParameter("UnsuccessMessage", "AccountId not exist")
+                        .AddStep<ISearchAccountStep>()
+                            .SetParameter("Id", model.DestinationAccountId)
+                            .SetParameter("UnsuccessMessage", "DestinationAccountId not exist")
                         .AddStep<IDepositAccountStep>()
                             .When<IDepositAccountCondition>()
                         .Execute(model);

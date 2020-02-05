@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace PipelineR
 {
@@ -50,6 +52,27 @@ namespace PipelineR
         {
             var stepHandler = (IStepHandler<TContext>)_serviceProvider.GetService<TStepHandler>();
             return this.AddFinally(stepHandler);
+        }
+
+        public Pipeline<TContext> SetParameter(string key, object value)
+        {
+            var lastStepHandler = GetLastStepHandler(this._stepHandler);
+            lastStepHandler.Parameters.Add(key, value);
+
+            return this;
+        }
+
+        public Pipeline<TContext> SetValue<TPropertie>(Expression<Func<TContext, TPropertie>> action, TPropertie value)
+        {
+            var expression = (MemberExpression)action.Body;
+            var name = expression.Member.Name;
+
+            Type type = typeof(TContext);
+
+            PropertyInfo pi = type.GetProperty(name);
+            pi.SetValue(this._stepHandler.Context, value);
+
+            return this;
         }
 
         public Pipeline<TContext> AddStep(IStepHandler<TContext> stepHandler)

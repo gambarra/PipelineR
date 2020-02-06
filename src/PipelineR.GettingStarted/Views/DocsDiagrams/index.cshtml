@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Diagram</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+</head>
+<body>
+    <div class="mermaid">
+        graph TD
+id230bfd5055c444eea3a7a59037e50cef[Testing]
+id334216163698447ab447581579c62669[Testing2]
+id230bfd5055c444eea3a7a59037e50cef-->id334216163698447ab447581579c62669
+
+
+    </div>
+
+    <script src="/scripts/mermaid.min.js"></script>
+    <script src="/scripts/popper.min.js"></script>
+    <script src="/scripts/tippy.min.js"></script>
+    <script>
+
+        var descriptions = null;
+
+        function truncate(input, leng) {
+            if (input.length > leng)
+                return input.substring(0, leng) + '...';
+            else
+                return input;
+        };
+
+        mermaid.initialize({
+            startOnLoad: true,
+            htmlLabels: true,
+            theme: 'forest',
+            // themeCSS: '.node rect { fill: red; }',
+            logLevel: 3,
+            flowchart: { curve: 'basis', useMaxWidth: false },
+            mermaid: {
+                callback: function (id) {
+                    for (var key in descriptions) {
+                        if (!descriptions.hasOwnProperty(key))
+                            continue;
+
+                        tippy('#' + key,
+                            {
+                                content: truncate(descriptions[key], 100).replace(/(?:\r\n|\r|\n)/g, '<br>')
+                            });
+
+                        const desc1 = descriptions[key];
+
+                        var func1 = function () {
+                            alert(desc1);
+                        };
+
+                        document.getElementById(key).addEventListener("click", func1);
+                    }
+                }
+            }
+        });
+
+
+
+    </script>
+</body>
+</html>

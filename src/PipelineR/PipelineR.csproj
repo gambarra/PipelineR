@@ -12,7 +12,30 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="DrawGraph\**" />
+      <EmbeddedResource Remove="DrawGraph\**" />
+      <None Remove="DrawGraph\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="DrawingGraph\Data\DocsDiagramsController.txt" />
+      <None Remove="DrawingGraph\Data\mermaid.min.js" />
+      <None Remove="DrawingGraph\Data\popper.min.js" />
+      <None Remove="DrawingGraph\Data\template.html" />
+      <None Remove="DrawingGraph\Data\tippy.min.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="DrawingGraph\Data\DocsDiagramsController.txt" />
+      <EmbeddedResource Include="DrawingGraph\Data\mermaid.min.js" />
+      <EmbeddedResource Include="DrawingGraph\Data\popper.min.js" />
+      <EmbeddedResource Include="DrawingGraph\Data\template.html" />
+      <EmbeddedResource Include="DrawingGraph\Data\tippy.min.js" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="FluentValidation" Version="8.5.1" />
+      <PackageReference Include="MermaidNet" Version="1.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     </ItemGroup>

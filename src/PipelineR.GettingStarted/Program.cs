@@ -11,6 +11,8 @@ namespace PipelineR.GettingStarted
     {
         public static void Main(string[] _)
         {
+            PipelineDiagram.Setup();
+
             var config = new ApiBasicConfiguration
             {
                 ApiName = "PipelineR Getting Started",
@@ -31,7 +33,7 @@ namespace PipelineR.GettingStarted
             var diagram = new DiagramBuilder();
             var result = diagram.Build(graph);
 
-            var draw = new DrawGraph();
+            var draw = new PipelineDiagram();
             draw.Build(result, null);
 
             Api.Run(config);

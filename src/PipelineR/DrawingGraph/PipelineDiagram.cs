@@ -8,32 +8,38 @@ using System.Linq;
 
 namespace PipelineR.DrawingGraph
 {
-    public class DrawGraph
+    public class PipelineDiagram
     {
-        private readonly string _projectPath;
-        private readonly string _scriptsPath;
-        private readonly string _viewsPath;
-        private readonly string _controllersPath;
-        private readonly string _applicationName;
+        private static string _projectPath = Environment.CurrentDirectory;
+        private static string _applicationName = _projectPath.Split('\\').LastOrDefault();
+        private static string _scriptsPath = Path.Combine(_projectPath, "wwwroot/scripts");
+        private static string _viewsPath = Path.Combine(_projectPath, "Views/DocsDiagrams");
+        private static string _controllersPath = Path.Combine(_projectPath, "Controllers");
 
-        public DrawGraph()
+        public PipelineDiagram()
         {
-            _projectPath = Environment.CurrentDirectory;
-            _applicationName = _projectPath.Split('\\').LastOrDefault();
-            _scriptsPath = Path.Combine(_projectPath, "wwwroot/scripts");
-            _viewsPath = Path.Combine(_projectPath, "Views/DocsDiagrams");
-            _controllersPath = Path.Combine(_projectPath, "Controllers");
+            
+        }
 
-            ValidatePaths();
+        public static void Setup()
+        {
+            if (!Directory.Exists(_scriptsPath))
+                Directory.CreateDirectory(_scriptsPath);
+
+            if (!Directory.Exists(_viewsPath))
+                Directory.CreateDirectory(_viewsPath);
+
+            if (!Directory.Exists(_controllersPath))
+                Directory.CreateDirectory(_controllersPath);
         }
 
         public void Build(string graph, IDictionary<string, string> descriptions)
         {
+            ProccessController();
             CopyStream(LoadResource("PipelineR.DrawingGraph.Data.mermaid.min.js"), $"{_scriptsPath}/mermaid.min.js");
             CopyStream(LoadResource("PipelineR.DrawingGraph.Data.popper.min.js"), $"{_scriptsPath}/popper.min.js");
             CopyStream(LoadResource("PipelineR.DrawingGraph.Data.tippy.min.js"), $"{_scriptsPath}/tippy.min.js");
             ProccessTemplate(graph, descriptions);
-            ProccessController();
         }
 
         public void ProccessTemplate(string graph, IDictionary<string, string> descriptions)
@@ -65,18 +71,6 @@ namespace PipelineR.DrawingGraph
             var bytes = Encoding.ASCII.GetBytes(controller);
             var stream = new MemoryStream(bytes);
             CopyStream(stream, docsDiagramsController);
-        }
-
-        private void ValidatePaths()
-        {            
-            if (!Directory.Exists(_scriptsPath))
-                Directory.CreateDirectory(_scriptsPath);
-
-            if (!Directory.Exists(_viewsPath))
-                Directory.CreateDirectory(_viewsPath);
-
-            if (!Directory.Exists(_controllersPath))
-                Directory.CreateDirectory(_controllersPath);
         }
 
         private void CopyStream(Stream stream, string destPath)

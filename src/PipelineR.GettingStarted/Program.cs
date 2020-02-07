@@ -11,7 +11,7 @@ namespace PipelineR.GettingStarted
     {
         public static void Main(string[] _)
         {
-            PipelineDiagram.Setup();
+            //PipelineDiagram.Setup();
 
             var config = new ApiBasicConfiguration
             {
@@ -23,18 +23,18 @@ namespace PipelineR.GettingStarted
                 { Assembly.GetExecutingAssembly() }
             };
 
-            var graph = new Graph();
+            //var graph = new Graph();
 
-            var node = graph.AddNode("Testing");
-            var node2 = graph.AddNode("Testing2");
+            //var node = graph.AddNode("Testing");
+            //var node2 = graph.AddNode("Testing2");
 
-            graph.Connect(node, node2);
+            //graph.Connect(node, node2);
 
-            var diagram = new DiagramBuilder();
-            var result = diagram.Build(graph);
+            //var diagram = new DiagramBuilder();
+            //var result = diagram.Build(graph);
 
-            var draw = new PipelineDiagram();
-            draw.Build(result, null);
+            //var draw = new PipelineDiagram();
+            //draw.Build(result, null);
 
             Api.Run(config);
         }

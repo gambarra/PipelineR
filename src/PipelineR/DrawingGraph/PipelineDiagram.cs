@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using MermaidNet;
 
 namespace PipelineR.DrawingGraph
 {
@@ -15,13 +16,20 @@ namespace PipelineR.DrawingGraph
         private static string _scriptsPath = Path.Combine(_projectPath, "wwwroot/scripts");
         private static string _viewsPath = Path.Combine(_projectPath, "Views/DocsDiagrams");
         private static string _controllersPath = Path.Combine(_projectPath, "Controllers");
+        private List<(Graph graph, IDictionary<string, string> descriptions)> _graphs;
 
         public PipelineDiagram()
         {
-            
+            Setup();
+            _graphs = new List<(Graph graph, IDictionary<string, string> descriptions)>();
         }
 
-        public static void Setup()
+        public void AddGraph(Graph graph, IDictionary<string, string> descriptions)
+        {
+            _graphs.Add((graph, descriptions));
+        }
+
+        private void Setup()
         {
             if (!Directory.Exists(_scriptsPath))
                 Directory.CreateDirectory(_scriptsPath);
@@ -42,7 +50,7 @@ namespace PipelineR.DrawingGraph
             ProccessTemplate(graph, descriptions);
         }
 
-        public void ProccessTemplate(string graph, IDictionary<string, string> descriptions)
+        private void ProccessTemplate(string graph, IDictionary<string, string> descriptions)
         {
             var viewHtml = $"{_viewsPath}/index.cshtml";
 
@@ -57,7 +65,7 @@ namespace PipelineR.DrawingGraph
             CopyStream(stream, viewHtml);
         }
 
-        public void ProccessController()
+        private void ProccessController()
         {
             var docsDiagramsController = $"{_controllersPath}/DocsDiagramsController.cs";
 

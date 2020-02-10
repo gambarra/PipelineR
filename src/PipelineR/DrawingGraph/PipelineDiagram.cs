@@ -16,18 +16,72 @@ namespace PipelineR.DrawingGraph
         private static string _scriptsPath = Path.Combine(_projectPath, "wwwroot/scripts");
         private static string _viewsPath = Path.Combine(_projectPath, "Views/DocsDiagrams");
         private static string _controllersPath = Path.Combine(_projectPath, "Controllers");
-        private List<(Graph graph, IDictionary<string, string> descriptions)> _graphs;
+        //private List<(Graph graph, IDictionary<string, string> descriptions)> _graphs;
+        private Dictionary<object, Graph> _diagrams;
 
         public PipelineDiagram()
         {
             Setup();
-            _graphs = new List<(Graph graph, IDictionary<string, string> descriptions)>();
+            //_graphs = new List<(Graph graph, IDictionary<string, string> descriptions)>();
+            _diagrams = new Dictionary<object, Graph>();
         }
 
-        public void AddGraph(Graph graph, IDictionary<string, string> descriptions)
+        private Graph GetGraph(object key)
         {
-            _graphs.Add((graph, descriptions));
+            if (!_diagrams.TryGetValue(key, out var graph))
+            {
+                graph = new Graph();
+                _diagrams.Add(key, graph);
+            }
+            return graph;
         }
+
+        //private Node LastNode(object key)
+        //{
+        //    var graph = GetGraph(key);
+        //    var node = graph.Nodes.LastOrDefault();
+
+        //    if (node == null)
+
+
+        //}
+
+        public void BuildDiagram(object key)
+        {
+            var diagram = new DiagramBuilder();
+            var graph = GetGraph(key);
+            var descriptions = diagram.GetDescriptions(graph);
+
+            var result = diagram.Build(graph);
+
+            Build(result, descriptions);
+        }
+
+
+        public void AddStep(object key, string nodeName)
+        {
+            var graph = GetGraph(key);
+
+            var lastNode = graph.Nodes.LastOrDefault();
+
+            var node = graph.AddNode(nodeName);
+            node.Style = NodeStyle.Normal;
+
+            if (lastNode != null)
+            {
+                graph.Connect(lastNode, node);
+            }
+        }
+
+        //public void AddCondition()
+        //{
+
+        //}
+
+        //public void AddGraph(Graph graph, IDictionary<string, string> descriptions)
+        //{
+        //    //_graphs.Add((graph, descriptions));
+        //}
 
         private void Setup()
         {
@@ -41,7 +95,7 @@ namespace PipelineR.DrawingGraph
                 Directory.CreateDirectory(_controllersPath);
         }
 
-        public void Build(string graph, IDictionary<string, string> descriptions)
+        private void Build(string graph, IDictionary<string, string> descriptions)
         {
             ProccessController();
             CopyStream(LoadResource("PipelineR.DrawingGraph.Data.mermaid.min.js"), $"{_scriptsPath}/mermaid.min.js");

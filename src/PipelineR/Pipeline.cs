@@ -47,6 +47,12 @@ namespace PipelineR
             return pipeline;
         }
 
+        public Pipeline<TContext> CreateDiagram()
+        {
+            _diagram.BuildDiagram(this);
+            return this;
+        }
+
         public Pipeline<TContext> AddFinally(IStepHandler<TContext> stepHandler)
         {
             _finallyStepHandler = stepHandler;
@@ -87,6 +93,7 @@ namespace PipelineR
             else
                 GetLastStepHandler(this._stepHandler).NextStep = stepHandler;
 
+            this._diagram.AddStep(this, stepHandler.GetType().Name);
             return this;
         }
 
@@ -101,6 +108,7 @@ namespace PipelineR
         public Pipeline<TContext> AddStep<TStepHandler>()
         {
             var stepHandler = (IStepHandler<TContext>)this._serviceProvider.GetService<TStepHandler>();
+
             return this.AddStep(stepHandler);
         }
 

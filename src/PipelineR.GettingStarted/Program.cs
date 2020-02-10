@@ -26,6 +26,7 @@ namespace PipelineR.GettingStarted
             //var graph = new Graph();
 
             //var node = graph.AddNode("Testing");
+            //node.Style = NodeStyle.
             //var node2 = graph.AddNode("Testing2");
 
             //graph.Connect(node, node2);

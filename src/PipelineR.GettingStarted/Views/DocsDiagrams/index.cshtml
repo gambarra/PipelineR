@@ -9,9 +9,9 @@
 <body>
     <div class="mermaid">
         graph TD
-id2378097ab8f6481aa42547383dc2d8ba[Testing]
-id3a8dafe4daa04a03beb2f1fbe40d8e35[Testing2]
-id2378097ab8f6481aa42547383dc2d8ba-->id3a8dafe4daa04a03beb2f1fbe40d8e35
+id199cdd90d0074d5abaf1432f13fedaba[SearchAccountStep]
+id4adfcb09b156486399ba606fd21af83c[CreateAccountStep]
+id199cdd90d0074d5abaf1432f13fedaba-->id4adfcb09b156486399ba606fd21af83c
 
 
     </div>
@@ -21,7 +21,7 @@ id2378097ab8f6481aa42547383dc2d8ba-->id3a8dafe4daa04a03beb2f1fbe40d8e35
     <script src="/scripts/tippy.min.js"></script>
     <script>
 
-        var descriptions = null;
+        var descriptions = {};
 
         function truncate(input, leng) {
             if (input.length > leng)
@@ -52,6 +52,20 @@ id2378097ab8f6481aa42547383dc2d8ba-->id3a8dafe4daa04a03beb2f1fbe40d8e35
 
                         var func1 = function () {
                             alert(desc1);
+                        };
+
+                        document.getElementById(key).addEventListener("click", func1);
+                    }
+                }
+            }
+        });
+
+
+
+    </script>
+</body>
+</html>
+              alert(desc1);
                         };
 
                         document.getElementById(key).addEventListener("click", func1);

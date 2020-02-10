@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using PipelineR.DrawingGraph;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,23 +12,27 @@ namespace PipelineR
     {
         private readonly IServiceProvider _serviceProvider;
 
+        private readonly PipelineDiagram _diagram;
+
         private IStepHandler<TContext> _finallyStepHandler;
         private IStepHandler<TContext> _stepHandler;
         private IValidator<object> _validator;
 
-        public Pipeline()
-        {
-        }
+
+        //public Pipeline()
+        //{
+        //}
 
         private Pipeline(IServiceProvider serviceProvider)
         {
             this._serviceProvider = serviceProvider;
+            this._diagram = _serviceProvider.GetService<PipelineDiagram>();
         }
 
-        public static Pipeline<TContext> Configure()
-        {
-            return new Pipeline<TContext>();
-        }
+        //public static Pipeline<TContext> Configure()
+        //{
+        //    return new Pipeline<TContext>();
+        //}
 
         public static Pipeline<TContext> Configure(IServiceProvider serviceProvider)
         {
@@ -40,6 +45,12 @@ namespace PipelineR
             var pipeline = new Pipeline<TContext>(serviceProvider);
             pipeline._stepHandler.Context = context;
             return pipeline;
+        }
+
+        public Pipeline<TContext> CreateDiagram()
+        {
+            _diagram.BuildDiagram(this);
+            return this;
         }
 
         public Pipeline<TContext> AddFinally(IStepHandler<TContext> stepHandler)
@@ -82,6 +93,7 @@ namespace PipelineR
             else
                 GetLastStepHandler(this._stepHandler).NextStep = stepHandler;
 
+            this._diagram.AddStep(this, stepHandler.GetType().Name);
             return this;
         }
 
@@ -96,6 +108,7 @@ namespace PipelineR
         public Pipeline<TContext> AddStep<TStepHandler>()
         {
             var stepHandler = (IStepHandler<TContext>)this._serviceProvider.GetService<TStepHandler>();
+
             return this.AddStep(stepHandler);
         }
 

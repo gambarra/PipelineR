@@ -1,6 +1,8 @@
 ﻿using AspNetScaffolding;
 using AspNetScaffolding.Models;
+using MermaidNet;
 using Microsoft.Extensions.DependencyInjection;
+using PipelineR.DrawingGraph;
 using System.Reflection;
 
 namespace PipelineR.GettingStarted
@@ -9,6 +11,8 @@ namespace PipelineR.GettingStarted
     {
         public static void Main(string[] _)
         {
+            //PipelineDiagram.Setup();
+
             var config = new ApiBasicConfiguration
             {
                 ApiName = "PipelineR Getting Started",
@@ -19,12 +23,26 @@ namespace PipelineR.GettingStarted
                 { Assembly.GetExecutingAssembly() }
             };
 
+            //var graph = new Graph();
+
+            //var node = graph.AddNode("Testing");
+            //node.Style = NodeStyle.
+            //var node2 = graph.AddNode("Testing2");
+
+            //graph.Connect(node, node2);
+
+            //var diagram = new DiagramBuilder();
+            //var result = diagram.Build(graph);
+
+            //var draw = new PipelineDiagram();
+            //draw.Build(result, null);
+
             Api.Run(config);
         }
 
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache();
+            services.AddMemoryCache();            
 
             Startup.AddPipelines(services);
         }

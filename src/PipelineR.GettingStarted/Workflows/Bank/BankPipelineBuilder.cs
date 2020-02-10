@@ -22,6 +22,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank
                             .SetParameter("UnsuccessMessage", "Account not exist.")
                         .AddStep<ICreateAccountStep>()
                             .When(ctx => ctx.Account == null)
+                        .CreateDiagram()
                         .Execute(model);
         }
 

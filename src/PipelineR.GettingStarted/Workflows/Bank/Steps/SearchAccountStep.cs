@@ -17,7 +17,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank.Steps
             var account = _repository.Get(id);
 
             if (account == null)
-                this.Context.Response = new StepHandlerResult(this.Parameters.Get<string>("UnsuccessMessage"), 200, false);
+                this.Context.Response = new StepHandlerResult(this.Parameters.Get<string>("UnsuccessMessage"), 412, false);
 
             this.Context.Account = account;
 

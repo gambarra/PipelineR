@@ -19,7 +19,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank
                         .Configure(ServiceProvider)
                         .AddStep<ISearchAccountStep>()
                             .SetParameter("Id", model.Id)
-                            .SetParameter("UnsuccessMessage", "Account already exist.")
+                            .SetParameter("UnsuccessMessage", "Account not exist.")
                         .AddStep<ICreateAccountStep>()
                             .When(ctx => ctx.Account == null)
                         .Execute(model);

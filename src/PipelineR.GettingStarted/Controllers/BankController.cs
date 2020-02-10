@@ -23,7 +23,7 @@ namespace PipelineR.GettingStarted.Controllers
 
             var model = new CreateAccountModel()
             {
-                Id = 1,
+                Id = accountKey,
                 BalanceInCents = 0,
                 OwnerName = "Yuri Pereira"
             };

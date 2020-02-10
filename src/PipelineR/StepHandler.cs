@@ -44,9 +44,24 @@ namespace PipelineR
             => this.Context.Response = new StepHandlerResult(errorResult, 0);
 
         protected StepHandlerResult Finish(object result, int statusCode)
-            => this.Context.Response = new StepHandlerResult(result, statusCode, true);
+        {
+            if (result.GetType() == typeof(StepHandlerResult))
+                this.Context.Response = (StepHandlerResult)result;
+            else
+                this.Context.Response = new StepHandlerResult(result, statusCode, true);
+
+            return this.Context.Response;
+        }
 
         protected StepHandlerResult Finish(object result)
-            => this.Context.Response = new StepHandlerResult(result, 0, true);
+        {
+            if (result.GetType() == typeof(StepHandlerResult))
+                this.Context.Response = (StepHandlerResult)result;
+            else
+                this.Context.Response = new StepHandlerResult(result, 0, true);
+
+            return this.Context.Response;
+        }
+            
     }
 }

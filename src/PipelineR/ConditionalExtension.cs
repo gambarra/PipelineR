@@ -8,7 +8,7 @@ namespace PipelineR
         public static bool IsSatisfied<TContext, TRequest>(this Expression<Func<TContext, TRequest, bool>> condition, TContext context, TRequest request)
         {
             var compiledExpression = condition.Compile();
-            return compiledExpression(context,request);
+            return compiledExpression(context, request);
         }
 
         public static IRequestHandler<TContext, TRequest> When<TContext, TRequest>(
@@ -17,6 +17,5 @@ namespace PipelineR
             ((RequestHandler<TContext, TRequest>) requestHandler).Condition = condition;
             return requestHandler;
         }
-   
     }
 }

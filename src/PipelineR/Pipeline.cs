@@ -1,9 +1,8 @@
-﻿using System;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace PipelineR
 {
@@ -21,12 +20,13 @@ namespace PipelineR
 
         public Pipeline()
         {
-
         }
+
         public static Pipeline<TContext, TRequest> Configure()
         {
             return new Pipeline<TContext, TRequest>();
         }
+
         public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider)
         {
             return new Pipeline<TContext, TRequest>(serviceProvider);
@@ -55,11 +55,13 @@ namespace PipelineR
         }
 
         public Pipeline<TContext, TRequest> AddNext<TRequestHandler>() => AddNext<TRequestHandler>(null);
+
         public Pipeline<TContext, TRequest> AddFinally(IRequestHandler<TContext, TRequest> requestHandler)
         {
             _finallyRequestHandler = requestHandler;
             return this;
         }
+
         public Pipeline<TContext, TRequest> AddFinally<TRequestHandler>()
         {
             var requestHandler = (IRequestHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>();
@@ -74,7 +76,6 @@ namespace PipelineR
 
         public Pipeline<TContext, TRequest> AddValidator<TValidator>()
         {
-
             var validator = (IValidator<TRequest>)_serviceProvider.GetService<TValidator>();
             return this.AddValidator(validator);
         }
@@ -87,8 +88,9 @@ namespace PipelineR
 
                 if (validateResult.IsValid == false)
                 {
-                    var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
-                    return new RequestHandlerResult(errors, 412);
+                    var errors = (validateResult.Errors.Select(p => 
+                        new ErrorResult(null, p.ErrorMessage, p.PropertyName))).ToList();
+                    return new RequestHandlerResult(errors, 400);
                 }
 
             }
@@ -97,7 +99,6 @@ namespace PipelineR
             {
                 throw new ArgumentNullException("No started handlers");
             }
-
 
             this._requestHandler.Context.Request = request;
 
@@ -110,7 +111,6 @@ namespace PipelineR
 
         private RequestHandlerResult ExecuteFinallyHandler(TRequest request)
         {
-
             RequestHandlerResult result = null;
 
             if (this._finallyRequestHandler != null)
@@ -120,8 +120,6 @@ namespace PipelineR
 
             return result;
         }
-
-
 
         private static IRequestHandler<TContext, TRequest> GetLastRequestHandler(
             IRequestHandler<TContext, TRequest> requestHandler)

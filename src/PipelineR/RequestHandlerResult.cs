@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 
 namespace PipelineR
 {
@@ -10,7 +11,6 @@ namespace PipelineR
 
         public IReadOnlyCollection<ErrorResult> Errors { private set; get; }
 
-
         public int StatusCode { get; private set; }
 
         public RequestHandlerResult(IReadOnlyCollection<ErrorResult> errors, int statusCode)
@@ -19,6 +19,7 @@ namespace PipelineR
             this._success = false;
             this.StatusCode = statusCode;
         }
+
         public RequestHandlerResult(IReadOnlyCollection<ErrorResult> errors) : this(errors, 0)
         {
         }
@@ -30,6 +31,13 @@ namespace PipelineR
             this.StatusCode = statusCode;
         }
 
+        public RequestHandlerResult(ErrorResult errorResult, HttpStatusCode statusCode)
+        {
+            this.Errors = new List<ErrorResult> { errorResult };
+            this._success = false;
+            this.StatusCode = (int) statusCode;
+        }
+
         public RequestHandlerResult(object result, int statusCode, bool isSuccessful)
         {
             this._result = result;
@@ -37,6 +45,12 @@ namespace PipelineR
             this.StatusCode = statusCode;
         }
 
+        public RequestHandlerResult(object result, HttpStatusCode statusCode, bool isSuccessful)
+        {
+            this._result = result;
+            this._success = isSuccessful;
+            this.StatusCode = (int) statusCode;
+        }
 
         public bool IsSuccess() => _success;
 

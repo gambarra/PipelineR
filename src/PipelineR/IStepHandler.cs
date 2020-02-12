@@ -15,4 +15,9 @@ namespace PipelineR
 
         Dictionary<string, object> Parameters { get; set; }
     }
+
+    public interface IStep
+    {
+
+    }
 }

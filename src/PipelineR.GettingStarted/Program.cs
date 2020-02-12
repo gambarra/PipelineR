@@ -23,6 +23,7 @@ namespace PipelineR.GettingStarted
                 { Assembly.GetExecutingAssembly() }
             };
 
+
             //var graph = new Graph();
 
             //var node = graph.AddNode("Testing");
@@ -42,7 +43,8 @@ namespace PipelineR.GettingStarted
 
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache();            
+            services.AddMemoryCache();
+            services.Setup();
 
             Startup.AddPipelines(services);
         }

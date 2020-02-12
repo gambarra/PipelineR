@@ -20,12 +20,12 @@ namespace PipelineR.GettingStarted
         {
             services.AddScoped(p => new BankContext());
 
-            services.AddScoped<ISearchAccountStep, SearchAccountStep>();
+            //services.AddScoped<ISearchAccountStep, SearchAccountStep>();
 
-            services.AddScoped<IDepositAccountStep, DepositAccountStep>();
+            //services.AddScoped<IDepositAccountStep, DepositAccountStep>();
             services.AddScoped<IDepositAccountCondition, DepositAccountStep>();
 
-            services.AddScoped<ICreateAccountStep, CreateAccountStep>();
+            //services.AddScoped<ICreateAccountStep, CreateAccountStep>();
 
             services.AddScoped<IBankPipelineBuilder, BankPipelineBuilder>();
         }

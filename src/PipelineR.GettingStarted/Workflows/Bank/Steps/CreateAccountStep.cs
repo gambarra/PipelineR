@@ -19,6 +19,13 @@ namespace PipelineR.GettingStarted.Workflows.Bank.Steps
             var request = this.Context.Request<CreateAccountModel>();
             var account = request.As<Account>();
 
+            //var account = new Account()
+            //{
+            //    BalanceInCents = request.BalanceInCents,
+            //    Id = request.Id,
+            //    OwnerName = request.OwnerName
+            //};
+
             _repository.Insert(account);
 
             this.Context.Response = new StepHandlerResult("Created", 200, true);
@@ -27,7 +34,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank.Steps
         }
     }
 
-    public interface ICreateAccountStep : IStepHandler<BankContext>
+    public interface ICreateAccountStep
     {
     }
 }

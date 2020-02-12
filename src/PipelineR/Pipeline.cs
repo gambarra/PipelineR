@@ -23,9 +23,9 @@ namespace PipelineR
         //{
         //}
 
-        private Pipeline(IServiceProvider serviceProvider)
+        private Pipeline()
         {
-            this._serviceProvider = serviceProvider;
+            this._serviceProvider = PipelineRAutoInject.ServiceProvider;
             this._diagram = _serviceProvider.GetService<PipelineDiagram>();
         }
 
@@ -34,15 +34,15 @@ namespace PipelineR
         //    return new Pipeline<TContext>();
         //}
 
-        public static Pipeline<TContext> Configure(IServiceProvider serviceProvider)
+        public static Pipeline<TContext> Start()
         {
-            var pipeline = new Pipeline<TContext>(serviceProvider);
+            var pipeline = new Pipeline<TContext>();
             return pipeline;
         }
 
-        public static Pipeline<TContext> Configure(IServiceProvider serviceProvider, TContext context)
+        public static Pipeline<TContext> Start(TContext context)
         {
-            var pipeline = new Pipeline<TContext>(serviceProvider);
+            var pipeline = new Pipeline<TContext>();
             pipeline._stepHandler.Context = context;
             return pipeline;
         }

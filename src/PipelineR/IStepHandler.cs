@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace PipelineR
 {
-    public interface IStepHandler<TContext> where TContext : class
+    public interface IStepHandler<TPipelineContext> where TPipelineContext : class
     {
-        Func<TContext, bool> Condition { get; set; }
+        Func<TPipelineContext, bool> Condition { get; set; }
 
-        TContext Context { get; set; }
+        TPipelineContext Context { get; set; }
 
-        IStepHandler<TContext> NextStep { get; set; }
+        IStepHandler<TPipelineContext> NextStep { get; set; }
 
         StepHandlerResult HandleStep();
-
-        Dictionary<string, object> Parameters { get; set; }
-    }
-
-    public interface IStep
-    {
-
     }
 }

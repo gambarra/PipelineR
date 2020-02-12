@@ -18,16 +18,16 @@ namespace PipelineR.GettingStarted
 
         public static void BankPipeline(IServiceCollection services)
         {
-            services.AddScoped(p => new BankContext());
+            //services.AddScoped(p => new BankContext());
 
             //services.AddScoped<ISearchAccountStep, SearchAccountStep>();
 
             //services.AddScoped<IDepositAccountStep, DepositAccountStep>();
-            services.AddScoped<IDepositAccountCondition, DepositAccountStep>();
+            //services.AddScoped<IDepositAccountCondition, DepositAccountStep>();
 
             //services.AddScoped<ICreateAccountStep, CreateAccountStep>();
 
-            services.AddScoped<IBankPipelineBuilder, BankPipelineBuilder>();
+            //services.AddScoped<IBankPipelineBuilder, BankPipelineBuilder>();
         }
 
         private static void Repositories(IServiceCollection services)

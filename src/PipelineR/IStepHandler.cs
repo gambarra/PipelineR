@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PipelineR
 {
@@ -9,6 +10,8 @@ namespace PipelineR
         TPipelineContext Context { get; set; }
 
         IStepHandler<TPipelineContext> NextStep { get; set; }
+
+        Dictionary<string, object> Parameters { get; set; }
 
         StepHandlerResult HandleStep();
     }

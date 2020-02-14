@@ -12,10 +12,10 @@ namespace PipelineR
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly PipelineDiagram _diagram;
+        private readonly DrawDiagram _diagram;
 
         private IStepHandler<TContext> _finallyStepHandler;
-        private IStepHandler<TContext> _stepHandler;
+        private IStepHandler<TContext> _stepHandler; 
         private IValidator<object> _validator;
 
 
@@ -23,10 +23,10 @@ namespace PipelineR
         //{
         //}
 
-        private Pipeline()
+        public Pipeline()
         {
             this._serviceProvider = PipelineRAutoInject.ServiceProvider;
-            this._diagram = _serviceProvider.GetService<PipelineDiagram>();
+            this._diagram = _serviceProvider.GetService<DrawDiagram>();
         }
 
         //public static Pipeline<TContext> Configure()
@@ -34,18 +34,18 @@ namespace PipelineR
         //    return new Pipeline<TContext>();
         //}
 
-        public static Pipeline<TContext> Start()
-        {
-            var pipeline = new Pipeline<TContext>();
-            return pipeline;
-        }
+        //public static Pipeline<TContext> Start()
+        //{
+        //    var pipeline = new Pipeline<TContext>();
+        //    return pipeline;
+        //}
 
-        public static Pipeline<TContext> Start(TContext context)
-        {
-            var pipeline = new Pipeline<TContext>();
-            pipeline._stepHandler.Context = context;
-            return pipeline;
-        }
+        //public static Pipeline<TContext> Start(TContext context)
+        //{
+        //    var pipeline = new Pipeline<TContext>();
+        //    pipeline._stepHandler.Context = context;
+        //    return pipeline;
+        //}
 
         public Pipeline<TContext> CreateDiagram()
         {
@@ -86,7 +86,7 @@ namespace PipelineR
             return this;
         }
 
-        public Pipeline<TContext> AddStep(IStepHandler<TContext> stepHandler)
+        public IPipeline<TContext> AddStep(IStepHandler<TContext> stepHandler)
         {
             if (this._stepHandler == null)
                 this._stepHandler = stepHandler;
@@ -105,7 +105,7 @@ namespace PipelineR
             return this;
         }
 
-        public Pipeline<TContext> AddStep<TStepHandler>()
+        public IPipeline<TContext> AddStep<TStepHandler>()
         {
             var stepHandler = (IStepHandler<TContext>)this._serviceProvider.GetService<TStepHandler>();
 

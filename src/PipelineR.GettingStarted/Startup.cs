@@ -25,7 +25,8 @@ namespace PipelineR.GettingStarted
             //services.AddScoped<IDepositAccountStep, DepositAccountStep>();
             //services.AddScoped<IDepositAccountCondition, DepositAccountStep>();
 
-            services.AddScoped<IPipelineStarting<BankContext>, PipelineStartingDiagram<BankContext>>();
+            //services.AddScoped<IPipelineStarting<BankContext>, PipelineStartingDiagram<BankContext>>();
+            //services.AddScoped<IPipelineStarting<BankContext>, PipelineStarting<BankContext>>();
             //services.AddScoped<ICreateAccountStep, CreateAccountStep>();
 
             //services.AddScoped<IBankPipelineBuilder, BankPipelineBuilder>();

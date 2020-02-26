@@ -46,7 +46,6 @@ namespace PipelineR.GettingStarted
             services.AddMemoryCache();
 
             Startup.AddPipelines(services);
-
             services.SetupPipelineR();
         }
     }

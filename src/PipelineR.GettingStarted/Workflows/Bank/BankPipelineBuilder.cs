@@ -15,7 +15,7 @@ namespace PipelineR.GettingStarted.Workflows.Bank
         public StepHandlerResult CreateAccount(CreateAccountModel model)
         {
             return Pipeline
-                        .Start()
+                        .Start("Create Account", "Creating an bank account")
                         .AddStep<ISearchAccountStep>()
                             //.SetParameter("Id", model.Id)
                             //.SetParameter("UnsuccessMessage", "Account not exist.")
@@ -28,16 +28,16 @@ namespace PipelineR.GettingStarted.Workflows.Bank
         public StepHandlerResult Deposit(DepositModel model)
         {
             return Pipeline
-                        .Start()
-                            //.SetValue(ctx => ctx.AccountId, model.AccountId)
+                        .Start("Deposit", "Making a bank deposit")
+                        //.SetValue(ctx => ctx.AccountId, model.AccountId)
                         .AddStep<ISearchAccountStep>()
-                            //.SetValue(ctx => ctx.AccountId, model.AccountId)
-                            //.SetParameter("UnsuccessMessage", "AccountId not exist")
+                        //.SetValue(ctx => ctx.AccountId, model.AccountId)
+                        //.SetParameter("UnsuccessMessage", "AccountId not exist")
                         .AddStep<ISearchAccountStep>()
                             //.SetValue(ctx => ctx.AccountId, model.DestinationAccountId)
                             //.SetParameter("UnsuccessMessage", "DestinationAccountId not exist")
-                        .AddStep<IDepositAccountStep>()
                             //.When<IDepositAccountCondition>()
+                        .AddFinally<IDepositAccountStep>()
                         .Execute(model);
         }
     }

@@ -12,54 +12,22 @@ namespace PipelineR
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly DrawDiagram _diagram;
-
         private IStepHandler<TContext> _finallyStepHandler;
         private IStepHandler<TContext> _stepHandler; 
         private IValidator<object> _validator;
-
-
-        //public Pipeline()
-        //{
-        //}
-
+  
         public Pipeline()
         {
             this._serviceProvider = PipelineRAutoInject.ServiceProvider;
-            this._diagram = _serviceProvider.GetService<DrawDiagram>();
         }
 
-        //public static Pipeline<TContext> Configure()
-        //{
-        //    return new Pipeline<TContext>();
-        //}
-
-        //public static Pipeline<TContext> Start()
-        //{
-        //    var pipeline = new Pipeline<TContext>();
-        //    return pipeline;
-        //}
-
-        //public static Pipeline<TContext> Start(TContext context)
-        //{
-        //    var pipeline = new Pipeline<TContext>();
-        //    pipeline._stepHandler.Context = context;
-        //    return pipeline;
-        //}
-
-        public Pipeline<TContext> CreateDiagram()
-        {
-            _diagram.BuildDiagram(this);
-            return this;
-        }
-
-        public Pipeline<TContext> AddFinally(IStepHandler<TContext> stepHandler)
+        public IPipeline<TContext> AddFinally(IStepHandler<TContext> stepHandler)
         {
             _finallyStepHandler = stepHandler;
             return this;
         }
 
-        public Pipeline<TContext> AddFinally<TStepHandler>()
+        public IPipeline<TContext> AddFinally<TStepHandler>()
         {
             var stepHandler = (IStepHandler<TContext>)_serviceProvider.GetService<TStepHandler>();
             return this.AddFinally(stepHandler);
@@ -93,11 +61,10 @@ namespace PipelineR
             else
                 GetLastStepHandler(this._stepHandler).NextStep = stepHandler;
 
-            this._diagram.AddStep(this, stepHandler.GetType().Name);
             return this;
         }
 
-        public Pipeline<TContext> AddStep(ICondition<TContext> condition)
+        public IPipeline<TContext> AddStep(ICondition<TContext> condition)
         {
             var lastStepHandler = GetLastStepHandler(this._stepHandler);
             lastStepHandler.Condition = condition.When();
@@ -112,13 +79,13 @@ namespace PipelineR
             return this.AddStep(stepHandler);
         }
 
-        public Pipeline<TContext> AddValidator<TRequest>(IValidator<TRequest> validator) where TRequest : class
+        public IPipeline<TContext> AddValidator<TRequest>(IValidator<TRequest> validator) where TRequest : class
         {
             _validator = (IValidator<object>)validator;
             return this;
         }
 
-        public Pipeline<TContext> AddValidator<TRequest>() where TRequest : class
+        public IPipeline<TContext> AddValidator<TRequest>() where TRequest : class
         {
             var validator = _serviceProvider.GetService<IValidator<TRequest>>();
             return this.AddValidator(validator);

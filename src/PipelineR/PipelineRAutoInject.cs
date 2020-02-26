@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace PipelineR
 {
@@ -12,7 +13,7 @@ namespace PipelineR
     {
         public static IServiceProvider ServiceProvider { get; private set; }
 
-        public static void SetupPipelineR(this IServiceCollection services)
+        public static void SetupPipelineR(this IServiceCollection services, bool createGraph = true)
         {
             var assemblies = GetAssemblies();
 
@@ -20,11 +21,26 @@ namespace PipelineR
                         .SelectMany(a => a.GetTypes())
                         .Select(a => a.GetTypeInfo());
 
+
             InjectContexts(services, types);
             InjectPipes(services, types);
 
-            //services.AddScoped<IPipelineStarting<BaseContext>, PipelineStarting<BaseContext>>();
+            if (createGraph)
+            {
+                ExecutePipelineStarting(services, types, typeof(PipelineStartingDiagram<>));
+                ServiceProvider = services.BuildServiceProvider();
+                LoadingDiagrams(types);
 
+                Task.Run(() => ServiceProvider.GetService<DrawDiagram>().BuildDiagram());
+            }
+
+            ExecutePipelineStarting(services, types, typeof(PipelineStarting<>));
+
+            ServiceProvider = services.BuildServiceProvider();
+        }
+
+        private static void ExecutePipelineStarting(IServiceCollection services, IEnumerable<TypeInfo> types, Type basePipelineStarting, bool isInsert = true)
+        {
             Type baseType = typeof(IPipelineStarting<>);
 
             var contexts = types
@@ -34,21 +50,22 @@ namespace PipelineR
             {
                 Type[] typeArgs = { context.AsType() };
                 var typeWithGeneric = baseType.MakeGenericType(typeArgs);
-
-                Type impleBaseType = typeof(PipelineStartingDiagram<>);
+                
+                Type impleBaseType = basePipelineStarting;
                 var impleTypeWithGeneric = impleBaseType.MakeGenericType(typeArgs);
 
-                services.AddScoped(typeWithGeneric, impleTypeWithGeneric);
+                if (isInsert)
+                    services.AddScoped(typeWithGeneric, impleTypeWithGeneric);
+                else
+                    services.Remove(new ServiceDescriptor(typeWithGeneric, impleTypeWithGeneric, ServiceLifetime.Scoped));
             }
-            
-
-            ServiceProvider = services.BuildServiceProvider();
-
-            LoadingDiagrams(services, types);
-            //BUILD DIAGRAM            
         }
 
-        private static void LoadingDiagrams(IServiceCollection services, IEnumerable<TypeInfo> types)
+        /// <summary>
+        /// Pega todos PipelineBuilder e seus métodos para criar os diagramas
+        /// </summary>
+        /// <param name="types"></param>
+        private static void LoadingDiagrams(IEnumerable<TypeInfo> types)
         {
             var searchingCondition = new[] { "IWorkflow" };
 
@@ -57,7 +74,7 @@ namespace PipelineR
                                        !searchingCondition.Any(exclude => a.Name.Contains(exclude)) &&
                                        a.ImplementedInterfaces.Any(i =>
                                                              searchingCondition.Any(include => i.Name.Contains(include))));
-
+            
             foreach (var pipe in pipes)
             {
                 var interfaces = pipe.GetInterfaces()
@@ -75,8 +92,11 @@ namespace PipelineR
 
                         var parameters = new List<object>();
 
-                        foreach (var paramCtor in paramsCtor)
-                            parameters.Add(Activator.CreateInstance(paramCtor.ParameterType));
+                        if (paramsCtor != null)
+                        {
+                            foreach (var paramCtor in paramsCtor)
+                                parameters.Add(Activator.CreateInstance(paramCtor.ParameterType));
+                        }
                         
                         var paramInstance = Activator.CreateInstance(parameter.ParameterType, parameters.ToArray());
 
@@ -85,7 +105,6 @@ namespace PipelineR
                 }
             }
         }
-
 
         private static void InjectPipes(IServiceCollection services, IEnumerable<TypeInfo> types)
         {
@@ -114,7 +133,7 @@ namespace PipelineR
                                 .Where(a => a.IsClass && a.BaseType == typeof(BaseContext));
 
             foreach (var context in contexts)
-                services.AddScoped(p => Activator.CreateInstance(context));
+                services.AddScoped(context.AsType());
         }
 
         private static IEnumerable<Assembly> GetAssemblies()

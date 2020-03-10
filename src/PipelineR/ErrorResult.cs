@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using WebApi.Models.Response;
 
 namespace PipelineR
 {
@@ -39,6 +40,10 @@ namespace PipelineR
         }
 
         public ErrorResult(object result) : this(null, null, null, result, null)
+        {
+        }
+
+        public ErrorResult(ErrorItemResponse error) : this(null, error.Message, null, null, error.Property)
         {
         }
 

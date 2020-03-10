@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using WebApi.Models.Response;
 
 namespace PipelineR
 {
@@ -34,25 +35,31 @@ namespace PipelineR
             => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode, false);
 
         protected RequestHandlerResult Abort(string errorMessage)
-            => this.Context.Response = new RequestHandlerResult(errorMessage, 0, false);
+            => this.Context.Response = new RequestHandlerResult(errorMessage, 400, false);
 
         protected RequestHandlerResult Abort(object errorResult, int statusCode )
              => this.Context.Response = new RequestHandlerResult(errorResult, statusCode, false);
 
         protected RequestHandlerResult Abort(object errorResult)
-            => this.Context.Response = new RequestHandlerResult(errorResult, 0, false);
+            => this.Context.Response = new RequestHandlerResult(errorResult, 400, false);
 
         protected RequestHandlerResult Abort(ErrorResult errorResult, int statusCode )
             => this.Context.Response = new RequestHandlerResult(errorResult, statusCode);
 
         protected RequestHandlerResult Abort(ErrorResult errorResult)
-            => this.Context.Response = new RequestHandlerResult(errorResult, 0);
+            => this.Context.Response = new RequestHandlerResult(errorResult, 400);
+
+        protected RequestHandlerResult Abort(ErrorsResponse errors, int statusCode = 400)
+           => this.Context.Response = new RequestHandlerResult(errors, statusCode, false);
+
+        protected RequestHandlerResult Abort(ErrorItemResponse error, int statusCode = 400)
+            => this.Context.Response = new RequestHandlerResult(error, statusCode, false);
 
         protected RequestHandlerResult Finish(object result, int statusCode )
             => this.Context.Response = new RequestHandlerResult(result, statusCode, true);
 
         protected RequestHandlerResult Finish(object result)
-            => this.Context.Response = new RequestHandlerResult(result, 0, true);
+            => this.Context.Response = new RequestHandlerResult(result, 400, true);
 
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
 

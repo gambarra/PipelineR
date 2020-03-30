@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace PipelineR.GettingStarted.Workflows.Bank.Condition
 {
     public class CreateAccountCondition : ICreateAccountCondition
     {
-        public Func<BankContext, bool> When()
+        public Expression<Func<BankContext, bool>> When()
         {
             throw new NotImplementedException();
         }

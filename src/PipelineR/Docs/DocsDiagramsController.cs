@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace ##ApplicationName##.Controllers
+namespace PipelineR.Docs
 {
     [Route("docs-diagrams")]
     [ApiExplorerSettings(IgnoreApi = true)]

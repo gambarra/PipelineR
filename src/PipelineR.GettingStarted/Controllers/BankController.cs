@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PipelineR.GettingStarted.Models;
 using PipelineR.GettingStarted.Workflows.Bank;
+using System;
 
 namespace PipelineR.GettingStarted.Controllers
 {
@@ -9,18 +10,23 @@ namespace PipelineR.GettingStarted.Controllers
     public class BankController : BaseController
     {
         private readonly IBankPipelineBuilder _bankPipelineBuilder;
-        
+
         public BankController(IBankPipelineBuilder bankPipelineBuilder)
         {
             _bankPipelineBuilder = bankPipelineBuilder;
         }
 
-        [HttpGet("{accountKey}")]
-        public IActionResult Get([FromRoute] int accountKey)
+        [HttpGet("deposit/{accountKey}/{destinationAccountKey}/{value}")]
+        public IActionResult GetDeposit([FromRoute] int accountKey, [FromRoute] int destinationAccountKey, [FromRoute] int value)
         {
-            //var model = new DepositModel(10, accountKey);
-            //var response = _bankPipelineBuilder.Deposit(model);
+            var model = new DepositModel(value, accountKey, destinationAccountKey);
+            var response = _bankPipelineBuilder.Deposit(model);
+            return new ObjectResult(response.Errors ?? response.Result()) { StatusCode = response.StatusCode };
+        }
 
+        [HttpGet("account/{accountKey}")]
+        public IActionResult GetAccount([FromRoute] int accountKey)
+        {
             var model = new CreateAccountModel()
             {
                 Id = accountKey,

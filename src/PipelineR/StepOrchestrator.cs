@@ -4,6 +4,8 @@
     {
         public static StepHandlerResult ExecuteHandler<TContext>(IStepHandler<TContext> stepHandler) where TContext : BaseContext
         {
+            stepHandler.LoadVariables();
+
             if (stepHandler.Condition is null)
                 return stepHandler.HandleStep();
             else if (stepHandler.Condition.IsSatisfied(stepHandler.Context))

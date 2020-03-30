@@ -13,11 +13,10 @@ namespace PipelineR.GettingStarted.Workflows.Bank.Steps
 
         public override StepHandlerResult HandleStep()
         {
-            var id = this.Parameters.Get<int>("Id");
-            var account = _repository.Get(id);
+            var account = _repository.Get(this.Context.AccountId);
 
             if (account == null)
-                this.Context.Response = new StepHandlerResult(this.Parameters.Get<string>("UnsuccessMessage"), 412, false);
+                this.Context.Response = new StepHandlerResult(this.Context.MessageFailed, 412, false);
 
             this.Context.Account = account;
 

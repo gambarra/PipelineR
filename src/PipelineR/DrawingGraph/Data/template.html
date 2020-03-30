@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Diagram</title>
+    <title>PipelineRDocs</title>
 
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!-- Our Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/css/jquery.json-viewer.css">
 
     <!-- Font Awesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
@@ -28,22 +29,12 @@
 
             <ul class="list-unstyled components">
                 ##MENU##
-                <!--<li> <a href="#">About</a> </li>-->
             </ul>
         </nav>
 
         <!-- Page Content  -->
         <div id="content">
-            ##GRAPH##
-            <!--<h2>Collapsible Sidebar Using Bootstrap 4</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-            <div class="mermaid">
-                graph TD
-
-            </div>
-            <div class="line"></div>-->
-
+            ##BODY##
         </div>
     </div>
 
@@ -56,6 +47,7 @@
     <script src="/scripts/mermaid.min.js"></script>
     <script src="/scripts/popper.min.js"></script>
     <script src="/scripts/tippy.min.js"></script>
+    <script src="/scripts/jquery.json-viewer.js"></script>
     <script>
 
         var descriptions = ##DESCRIPTIONS##;
@@ -132,6 +124,8 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
+            ##SCRIPTS##
+
             $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
             });

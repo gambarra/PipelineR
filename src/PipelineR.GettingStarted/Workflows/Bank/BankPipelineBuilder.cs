@@ -1,4 +1,7 @@
-﻿using PipelineR.GettingStarted.Models;
+﻿using FluentValidation;
+using PipelineR.GettingStarted.Models;
+using PipelineR.GettingStarted.Models.Validators;
+using PipelineR.GettingStarted.Workflows.Bank.Condition;
 using PipelineR.GettingStarted.Workflows.Bank.Steps;
 
 namespace PipelineR.GettingStarted.Workflows.Bank
@@ -17,11 +20,10 @@ namespace PipelineR.GettingStarted.Workflows.Bank
             return Pipeline
                         .Start("Create Account", "Creating an bank account")
                         .AddStep<ISearchAccountStep>()
-                            //.SetParameter("Id", model.Id)
-                            //.SetParameter("UnsuccessMessage", "Account not exist.")
+                            .SetValue(ctx => ctx.AccountId, model.Id)
+                            .SetValue(ctx => ctx.MessageFailed, "User already exists.")
                         .AddStep<ICreateAccountStep>()
-                            //.When(ctx => ctx.Account == null)
-                        //.CreateDiagram()
+                            .When(ctx => ctx.Account == null)
                         .Execute(model);
         }
 
@@ -29,15 +31,17 @@ namespace PipelineR.GettingStarted.Workflows.Bank
         {
             return Pipeline
                         .Start("Deposit", "Making a bank deposit")
-                        //.SetValue(ctx => ctx.AccountId, model.AccountId)
+                        .AddValidator<DepositModel>()
                         .AddStep<ISearchAccountStep>()
-                        //.SetValue(ctx => ctx.AccountId, model.AccountId)
-                        //.SetParameter("UnsuccessMessage", "AccountId not exist")
+                            .SetValue(ctx => ctx.AccountId, model.AccountId)
+                            .SetValue(ctx => ctx.MessageFailed, "Origin account not exists.")
                         .AddStep<ISearchAccountStep>()
-                            //.SetValue(ctx => ctx.AccountId, model.DestinationAccountId)
-                            //.SetParameter("UnsuccessMessage", "DestinationAccountId not exist")
-                            //.When<IDepositAccountCondition>()
-                        .AddFinally<IDepositAccountStep>()
+                            .SetValue(ctx => ctx.AccountId, model.DestinationAccountId)
+                            .SetValue(ctx => ctx.MessageFailed, "Destination account not exists.")
+                        .AddStep<IAddCreditAccountStep>()
+                            .When<IDepositAccountCondition>()
+                        .AddStep<ISearchAccountStep>()
+                        //.AddFinally<IDepositAccountStep>()
                         .Execute(model);
         }
     }

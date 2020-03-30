@@ -43,8 +43,10 @@ a:focus {
 .line {
     width: 100%;
     height: 1px;
-    border-bottom: 1px dashed #ddd;
+    border-bottom: 1px;
+    /*background-image: linear-gradient( to right, #eaeaea 66%, #3c454a 34% );*/
     margin: 40px 0;
+    padding: 0px !important;
 }
 
 /* ---------------------------------------------------
@@ -55,18 +57,46 @@ a:focus {
     display: flex;
     width: 100%;
     align-items: stretch;
+    /*background-image: linear-gradient( to right, #fafafa 72%, #263238 28% );*/
+}
+
+.col-sm-8 {
+    margin-top: 25px;
+    background-color: #fafafa;
+}
+
+.col-sm-4 {
+    background-color: #263238;
+    min-height: 100vh;
+}
+
+.codeTitle {
+    color: #FFF;
+    margin-top: 25px;
+    padding: 15px;
+    align-items: stretch;
+    /*padding: 25px;*/
+    background-color: #222d32;
+}
+
+.code {
+    margin-top: 10px;
+    width: 100%;
+    align-items: stretch;
+    /*padding: 25px;*/
+    background-color: #222d32;
 }
 
 #sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 350px;
+    max-width: 350px;
     background: #7386D5;
     color: #fff;
     transition: all 0.3s;
 }
 
     #sidebar.active {
-        margin-left: -250px;
+        margin-left: -350px;
     }
 
     #sidebar .sidebar-header {
@@ -101,54 +131,14 @@ a:focus {
         background: #6d7fcc;
     }
 
-a[data-toggle="collapse"] {
-    position: relative;
-}
-
-.dropdown-toggle::after {
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-}
-
-ul ul a {
-    font-size: 0.9em !important;
-    padding-left: 30px !important;
-    background: #6d7fcc;
-}
-
-ul.CTAs {
-    padding: 20px;
-}
-
-    ul.CTAs a {
-        text-align: center;
-        font-size: 0.9em !important;
-        display: block;
-        border-radius: 5px;
-        margin-bottom: 5px;
-    }
-
-a.download {
-    background: #fff;
-    color: #7386D5;
-}
-
-a.article,
-a.article:hover {
-    background: #6d7fcc !important;
-    color: #fff !important;
-}
-
 /* ---------------------------------------------------
     CONTENT STYLE
 ----------------------------------------------------- */
 
 #content {
     width: 100%;
-    padding: 20px;
+    padding-left: 25px;
+    padding-right: 15px;
     min-height: 100vh;
     transition: all 0.3s;
 }
@@ -159,7 +149,7 @@ a.article:hover {
 
 @media (max-width: 768px) {
     #sidebar {
-        margin-left: -250px;
+        margin-left: -350px;
     }
 
         #sidebar.active {

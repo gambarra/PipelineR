@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace PipelineR
 {
@@ -11,7 +12,9 @@ namespace PipelineR
 
         IStepHandler<TPipelineContext> NextStep { get; set; }
 
-        Dictionary<string, object> Parameters { get; set; }
+        void AddVariable(PropertyInfo propertyInfo, object value);
+
+        void LoadVariables();
 
         StepHandlerResult HandleStep();
     }

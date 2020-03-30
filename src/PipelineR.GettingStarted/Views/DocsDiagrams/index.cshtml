@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Diagram</title>
+    <title>PipelineRDocs</title>
 
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!-- Our Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/css/jquery.json-viewer.css">
 
     <!-- Font Awesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
@@ -27,34 +28,44 @@
             </div>
 
             <ul class="list-unstyled components">
-                <li> <a href="#e92da3d5-bf7b-4d99-8769-3d1d2473b159">Create Account</a> </li><li> <a href="#a4f20d40-2589-4f73-97e0-f427df9dfc3e">Deposit</a> </li>
-                <!--<li> <a href="#">About</a> </li>-->
+                <li> <a href="#45c0a14d-0233-48e4-bedf-e1ea8d4dce29">Create Account</a> </li>
+<li> <a href="#7771c774-ffe6-4888-b8bd-29486c4de9d0">Deposit</a> </li>
+
             </ul>
         </nav>
 
         <!-- Page Content  -->
         <div id="content">
-            <h2 id="e92da3d5-bf7b-4d99-8769-3d1d2473b159">Create Account</h2><p>Creating an bank account</p><div class="mermaid"> graph TD 
-id2c5d499aaa974248800208d296b64fc1[Search Account]
-id14f660b53835486587f2e0fc8727db76[Create Account]
-id2c5d499aaa974248800208d296b64fc1-->id14f660b53835486587f2e0fc8727db76
+            <div class="row"> 	<div class="col-sm-8" style="padding-left:50px; ">  		<h2 id="45c0a14d-0233-48e4-bedf-e1ea8d4dce29">Create Account</h2>			<p>Creating an bank account</p>			<div class="mermaid">				graph TD
+4f6e6d18-8bac-407d-a9db-0fd8544d8c22[Search Account]
+ea885dd9-b8a7-49af-b82b-c9bf3ba3d72a{"([Context].Account == null)"}
+880fb081-0fab-4f1f-b7ef-68641604d831[Create Account]
+dc8b2f4d-ad54-4d31-8945-339c3ece23ff[Add Credit Account]
+e2980af3-995d-4c39-abcd-2ccf001395e1((End))
+4f6e6d18-8bac-407d-a9db-0fd8544d8c22---ea885dd9-b8a7-49af-b82b-c9bf3ba3d72a
+ea885dd9-b8a7-49af-b82b-c9bf3ba3d72a-->|"True &zwnj; &zwnj; &zwnj;"|880fb081-0fab-4f1f-b7ef-68641604d831
+ea885dd9-b8a7-49af-b82b-c9bf3ba3d72a-->|"False &zwnj; &zwnj; &zwnj;"|dc8b2f4d-ad54-4d31-8945-339c3ece23ff
+880fb081-0fab-4f1f-b7ef-68641604d831-->dc8b2f4d-ad54-4d31-8945-339c3ece23ff
+dc8b2f4d-ad54-4d31-8945-339c3ece23ff-->e2980af3-995d-4c39-abcd-2ccf001395e1
 
- </div><div class="line"></div><h2 id="a4f20d40-2589-4f73-97e0-f427df9dfc3e">Deposit</h2><p>Making a bank deposit</p><div class="mermaid"> graph TD 
-id331a4b3426554cd9a0efa7d49fe245f9[Search Account]
-id7f7a6d4daa1d45c8a72f6f5fb8968daa[Search Account]
-id03f047c5e1434d1eb9818e8214ec27e6(Deposit Account)
-id331a4b3426554cd9a0efa7d49fe245f9-->id7f7a6d4daa1d45c8a72f6f5fb8968daa
-id7f7a6d4daa1d45c8a72f6f5fb8968daa-->id03f047c5e1434d1eb9818e8214ec27e6
+			</div>		</div>		<div class="col-sm-4">	   <p class="codeTitle">Request Model</p> 		<pre id="fb551ff5-d688-4311-9381-329ece04bbbb" class="code"></pre>		</div>		<div class="line"></div>	</div>	
+<div class="row"> 	<div class="col-sm-8" style="padding-left:50px; ">  		<h2 id="7771c774-ffe6-4888-b8bd-29486c4de9d0">Deposit</h2>			<p>Making a bank deposit</p>			<div class="mermaid">				graph TD
+idfdb73731b38c4ea4b590d5ca4d33b9be{Model Validator}
+9e4ba36f-de76-47e2-9b30-e3fdfb1ccadc((End))
+fb16184a-bd64-42a5-8eb7-68e6b87e91ed[Search Account]
+a7b95807-d213-4fc1-a67e-753b2cb5a434{"([Context].Account != null)"}
+e8c04f2b-4d07-49aa-9d79-f95ffbb40fb6[Add Credit Account]
+4635b791-b223-4548-82d0-7e37ebcdcd6b[Search Account]
+9e4ba36f-de76-47e2-9b30-e3fdfb1ccadc((End))
+idfdb73731b38c4ea4b590d5ca4d33b9be-->|"Invalid &zwnj; &zwnj; &zwnj;"|9e4ba36f-de76-47e2-9b30-e3fdfb1ccadc
+idfdb73731b38c4ea4b590d5ca4d33b9be-->|"Valid &zwnj; &zwnj; &zwnj;"|fb16184a-bd64-42a5-8eb7-68e6b87e91ed
+fb16184a-bd64-42a5-8eb7-68e6b87e91ed---a7b95807-d213-4fc1-a67e-753b2cb5a434
+a7b95807-d213-4fc1-a67e-753b2cb5a434-->|"True &zwnj; &zwnj; &zwnj;"|e8c04f2b-4d07-49aa-9d79-f95ffbb40fb6
+a7b95807-d213-4fc1-a67e-753b2cb5a434-->|"False &zwnj; &zwnj; &zwnj;"|4635b791-b223-4548-82d0-7e37ebcdcd6b
+e8c04f2b-4d07-49aa-9d79-f95ffbb40fb6-->4635b791-b223-4548-82d0-7e37ebcdcd6b
+4635b791-b223-4548-82d0-7e37ebcdcd6b-->9e4ba36f-de76-47e2-9b30-e3fdfb1ccadc
 
- </div><div class="line"></div>
-            <!--<h2>Collapsible Sidebar Using Bootstrap 4</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-            <div class="mermaid">
-                graph TD
-
-            </div>
-            <div class="line"></div>-->
+			</div>		</div>		<div class="col-sm-4">	   <p class="codeTitle">Request Model</p> 		<pre id="3b090652-6173-4dd1-b6dd-ad860030bc7f" class="code"></pre>		</div>		<div class="line"></div>	</div>	
 
         </div>
     </div>
@@ -68,6 +79,7 @@ id7f7a6d4daa1d45c8a72f6f5fb8968daa-->id03f047c5e1434d1eb9818e8214ec27e6
     <script src="/scripts/mermaid.min.js"></script>
     <script src="/scripts/popper.min.js"></script>
     <script src="/scripts/tippy.min.js"></script>
+    <script src="/scripts/jquery.json-viewer.js"></script>
     <script>
 
         var descriptions = {};
@@ -144,6 +156,10 @@ id7f7a6d4daa1d45c8a72f6f5fb8968daa-->id03f047c5e1434d1eb9818e8214ec27e6
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
+            $('#fb551ff5-d688-4311-9381-329ece04bbbb').jsonViewer({"id":0,"balance_in_cents":0,"owner_name":"string"}, {collapsed: true, rootCollapsable: false, withQuotes: true, withLinks: false});
+$('#3b090652-6173-4dd1-b6dd-ad860030bc7f').jsonViewer({"name":"string","amount":0,"account_id":0,"identifier":"b814b148-566a-42d9-dd89-689d839a5ab4","created_on":"2020-03-28T08:22:05.5417479-03:00","destination_account_id":0,"teste":{"id":0,"balance_in_cents":0,"owner_name":"string"},"teste_nullable":0,"accounts":[{"id":0,"balance_in_cents":0,"owner_name":"string"}],"arrays":[0],"tipo_conta":"corrente"}, {collapsed: true, rootCollapsable: false, withQuotes: true, withLinks: false});
+
+
             $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
             });

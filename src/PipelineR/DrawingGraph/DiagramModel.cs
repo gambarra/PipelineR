@@ -12,5 +12,7 @@ namespace PipelineR.DrawingGraph
         public string Description { get; set; }
         public Graph Graph { get; set; }
         public string Title { get; set; }
+        public object Context { get; set; }
+        public object Request { get; set; }
     }
 }

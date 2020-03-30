@@ -15,4 +15,9 @@
     <ProjectReference Include="..\PipelineR\PipelineR.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\DocsDiagrams\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

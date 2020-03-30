@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace PipelineR
 {
     public interface ICondition<TContext> where TContext : BaseContext
     {
-        Func<TContext, bool> When();
+        Expression<Func<TContext, bool>> When();
     }
 }

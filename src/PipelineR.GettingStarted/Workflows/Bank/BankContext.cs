@@ -6,5 +6,6 @@ namespace PipelineR.GettingStarted.Workflows.Bank
     {
         public int AccountId { get; set; }
         public Account Account { get; set; }
+        public string MessageFailed { get; set; }
     }
 }

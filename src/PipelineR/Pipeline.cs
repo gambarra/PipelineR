@@ -12,18 +12,21 @@ namespace PipelineR
     public class Pipeline<TContext, TRequest> : IPipeline<TContext, TRequest> where TContext : BaseContext
     {
         private IRequestHandler<TContext, TRequest> _requestHandler;
+        private readonly ICacheProvider _cacheProvider;
         private RequestHandler<TContext, TRequest> _lastRequestHandlerAdd;
         private IRequestHandler<TContext, TRequest> _finallyRequestHandler;
         private IValidator<TRequest> _validator;
         private readonly IServiceProvider _serviceProvider;
         private readonly Stack<RollbackHandler<TContext, TRequest>> _rollbacks;
         private IHandler<TContext, TRequest> _lastHandlerAdd;
+        private bool _useReuseRequisitionHash;
 
         #region Constructores
 
         private Pipeline(IServiceProvider serviceProvider) : this()
         {
             this._serviceProvider = serviceProvider;
+            _cacheProvider = serviceProvider.GetService<ICacheProvider>();
         }
 
         public Pipeline()
@@ -43,6 +46,11 @@ namespace PipelineR
             return new Pipeline<TContext, TRequest>(serviceProvider);
         }
 
+        public Pipeline<TContext, TRequest> UseRecoveryRequestByHash()
+        {
+            _useReuseRequisitionHash = true;
+            return this;
+        }
         #endregion
 
         #region AddNext
@@ -118,7 +126,7 @@ namespace PipelineR
         public Pipeline<TContext, TRequest> Rollback(IRollbackHandler<TContext, TRequest> rollbackHandler)
         {
 
-            var rollbackHandlerAux= (RollbackHandler<TContext, TRequest>)rollbackHandler;
+            var rollbackHandlerAux = (RollbackHandler<TContext, TRequest>)rollbackHandler;
 
             _lastHandlerAdd = rollbackHandler;
 
@@ -191,7 +199,6 @@ namespace PipelineR
                     var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
                     return new RequestHandlerResult(errors, 412);
                 }
-
             }
 
             if (this._requestHandler == null)
@@ -199,14 +206,69 @@ namespace PipelineR
                 throw new ArgumentNullException("No started handlers");
             }
 
+            RequestHandlerResult result = null;
 
-            this._requestHandler.Context.Request = request;
+            var lastRequestHandlerId = string.Empty;
+            var nextRequestHandlerId = string.Empty;
 
-            var result = RequestHandlerOrchestrator.ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this._requestHandler);
+            var hash = request.GenerateHash();
 
-            result = ExecuteFinallyHandler(request) ?? result;
+            if (this._useReuseRequisitionHash)
+            {
+                var snapshot = this._cacheProvider.Get<PipelineSnapshot>(hash).Result;
+                if (snapshot != null)
+                {
+                    if (snapshot.Success)
+                    {
+                        result = snapshot.Context.Response;
+                        result.SetStatusCode(202);
+                        return result;
+                    }
+                    else
+                    {
+                        this._requestHandler.UpdateContext((TContext)snapshot.Context);
+                        nextRequestHandlerId = snapshot.LastRequestHandlerId;
+                    }
+                }
 
+            }
+
+            lastRequestHandlerId = Execute(request, nextRequestHandlerId, ref result);
+
+            if (this._useReuseRequisitionHash)
+            {
+
+                var sucess = result?.IsSuccess() ?? false;
+                var snapshot = new PipelineSnapshot(sucess,
+                    lastRequestHandlerId,
+                    this._requestHandler.Context);
+
+                this._cacheProvider.Add<PipelineSnapshot>(snapshot, hash);
+            }
             return result;
+        }
+
+        private string Execute(TRequest request, string nextRequestHandlerId, ref RequestHandlerResult result)
+        {
+            string lastRequestHandlerId;
+            try
+            {
+                this._requestHandler.Context.Request = request;
+
+                result = RequestHandlerOrchestrator
+                    .ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this._requestHandler, nextRequestHandlerId);
+            }
+            catch (Exception ex)
+            {
+                //faz nada
+            }
+            finally
+            {
+                lastRequestHandlerId = this._requestHandler.Context.CurrentRequestHandleId;
+                result = ExecuteFinallyHandler(request) ?? result;
+            }
+
+            return lastRequestHandlerId;
         }
 
         private RequestHandlerResult ExecuteFinallyHandler(TRequest request)
@@ -241,6 +303,8 @@ namespace PipelineR
                 rollbackHandler.Execute(request);
             }
         }
+
+
     }
 
     public interface IPipeline<TContext, in TRequest> where TContext : BaseContext

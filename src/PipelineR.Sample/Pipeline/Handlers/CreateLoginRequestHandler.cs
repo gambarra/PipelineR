@@ -17,7 +17,8 @@ namespace PipelineR.Sample.Pipeline.Handlers
 
         public override RequestHandlerResult HandleRequest(UserRequest request)
         {
-            return this.Rollback(new RequestHandlerResult(new ErrorResult("Rollback"), 400));
+            throw new Exception("teste");
+            return this.Finish("OK");
         }
     }
 

@@ -17,7 +17,7 @@ namespace PipelineR
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
         internal Expression<Func<TContext, TRequest, bool>> RequestCondition { get; set; }
         public Policy Policy { get; set; }
-        public TContext Context { get; }
+        public TContext Context { get; private set; }
 
         public abstract void HandleRollback(TRequest request);
 
@@ -45,6 +45,11 @@ namespace PipelineR
         }
 
         internal void AddRollbackIndex(int rollbackIndex) => this.Index = rollbackIndex;
+
+        public void UpdateContext(TContext context)
+        {
+            this.Context = context;
+        }
     }
 
     public interface IRollbackHandler<TContext, TRequest>: IHandler<TContext, TRequest> where TContext : BaseContext
@@ -56,6 +61,7 @@ namespace PipelineR
     {
         Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
         TContext Context { get; }
+        void UpdateContext(TContext context);
         Policy Policy { get; set; }
     }
 }

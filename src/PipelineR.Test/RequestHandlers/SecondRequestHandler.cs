@@ -14,6 +14,6 @@ namespace PipelineR.Test.RequestHandlers
         public override RequestHandlerResult HandleRequest(SampleRequest request)
         {
             throw new NotImplementedException();
-        }
+        } 
     }
 }

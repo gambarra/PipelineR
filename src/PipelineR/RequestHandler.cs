@@ -71,18 +71,22 @@ namespace PipelineR
 
         #endregion
 
-
         #region Methods
-        public RequestHandlerResult Next(TRequest request)
+        public RequestHandlerResult Next() => Next(string.Empty);
+     
+
+        public RequestHandlerResult Next( string requestHandlerId)
         {
+            var request = (TRequest)this.Context.Request;
+
             if (this.NextRequestHandler != null)
             {
                 this.Context.Response = RequestHandlerOrchestrator.ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this.NextRequestHandler);
             }
 
             return this.Context.Response;
-        }
 
+        }
         public abstract RequestHandlerResult HandleRequest(TRequest request);
 
         internal RequestHandlerResult Execute(TRequest request)
@@ -109,6 +113,16 @@ namespace PipelineR
 
         public void AddPipeline(Pipeline<TContext, TRequest> pipeline) => this._pipeline = pipeline;
 
+        public  string RequestHandleId()
+        {
+            return this.GetType().Name;
+        }
+
+        public void UpdateContext(TContext context)
+        {
+            this.Context = context;
+        }
+
         #endregion
 
     }
@@ -117,6 +131,8 @@ namespace PipelineR
     {
         RequestHandlerResult HandleRequest(TRequest request);
         IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
-    
+        string RequestHandleId();
     }
+
+ 
 }

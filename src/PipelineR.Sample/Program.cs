@@ -12,13 +12,22 @@ namespace PipelineR.Sample
 
         static void Main(string[] args)
         {
+
+       
+
+
             Console.WriteLine("Hello World!");
             var service = IOC();
 
             var pipeline = service
                 .GetService<IPipeline<UserContext, UserRequest>>();
 
-            pipeline.Execute(new UserRequest());
+            pipeline.Execute(new UserRequest()
+            {
+                Name = "Yuri ",
+                Age = 10,
+                DocumentNumber = "125"
+            });
 
             Console.ReadLine();
         }
@@ -27,21 +36,24 @@ namespace PipelineR.Sample
         {
             serviceProvider = new ServiceCollection();
 
+        
+            serviceProvider.AddStackExchangeRedisCache(options => {
+                options.Configuration = "localhost";
+            });
+
+            serviceProvider.AddPipelineRCache(new CacheSettings());
+
             serviceProvider.AddScoped<IPipeline<UserContext, UserRequest>>(provider =>
             {
                 var pipeline = Pipeline<UserContext, UserRequest>
                     .Configure(provider)
+                    .UseRecoveryRequestByHash()
                     .AddNext<ICreateUserRequestHandler>()
-                        .When((context, request) => request.Name == "joão")
-                        .WithPolicy(Policy.Handle<Exception>().Retry(3))
-                        .Rollback<ICreateUserRollbackHandler>()
-                        .When((context, request) =>context.CreateUserRequestHandlerSuccess==false)
-                    .AddNext<ICreateLoginRequestHandler>()
-                        .WithPolicy(Policy.Handle<Exception>().Retry(2))
-                        .Rollback<ICreateLoginRollbackHandler>();
+                    .AddNext<ICreateLoginRequestHandler>();
+     
 
-               return pipeline;
-           });
+                return pipeline;
+            });
 
             serviceProvider.AddScoped<ICreateUserRequestHandler, CreateUserRequestHandler>();
             serviceProvider.AddScoped<ICreateLoginRequestHandler, CreateLoginRequestHandler>();
@@ -49,7 +61,7 @@ namespace PipelineR.Sample
             serviceProvider.AddScoped<ICreateUserRollbackHandler, CreateUserRollbackHandler>();
             serviceProvider.AddScoped<UserContext>();
 
-          return  serviceProvider.BuildServiceProvider();
+            return serviceProvider.BuildServiceProvider();
         }
     }
 }

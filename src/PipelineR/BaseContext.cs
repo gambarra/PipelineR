@@ -13,5 +13,6 @@ namespace PipelineR
         public object Request { get; set; }
         public RequestHandlerResult Response { get; set; }
         public string CurrentRequestHandleId { get; set; }
+
     }
 }

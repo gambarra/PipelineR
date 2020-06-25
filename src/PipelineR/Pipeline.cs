@@ -226,7 +226,11 @@ namespace PipelineR
                     }
                     else
                     {
-                        this._requestHandler.UpdateContext((TContext)snapshot.Context);
+                        var context = this._serviceProvider.GetService<TContext>();
+
+                 
+                        context = (TContext)snapshot.Context;
+
                         nextRequestHandlerId = snapshot.LastRequestHandlerId;
                     }
                 }

@@ -12,6 +12,7 @@ namespace PipelineR.Sample.Pipeline
         }
     
         public bool CreateUserRequestHandlerSuccess { get; set; }
+        public string Name { get; set; }
 
     }
 }

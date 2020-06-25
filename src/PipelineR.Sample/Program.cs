@@ -57,7 +57,7 @@ namespace PipelineR.Sample
 
             serviceProvider.AddScoped<ICreateUserRequestHandler, CreateUserRequestHandler>();
             serviceProvider.AddScoped<ICreateLoginRequestHandler, CreateLoginRequestHandler>();
-            serviceProvider.AddScoped<ICreateLoginRollbackHandler, CreateLoginRollbackHandler>();
+            serviceProvider.AddScoped<ICreateLoginMark1Handler, CreateLoginMark1Handler>();
             serviceProvider.AddScoped<ICreateUserRollbackHandler, CreateUserRollbackHandler>();
             serviceProvider.AddScoped<UserContext>();
 

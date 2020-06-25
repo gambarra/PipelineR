@@ -81,7 +81,7 @@ namespace PipelineR
 
             if (this.NextRequestHandler != null)
             {
-                this.Context.Response = RequestHandlerOrchestrator.ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this.NextRequestHandler);
+                this.Context.Response = RequestHandlerOrchestrator.ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this.NextRequestHandler, requestHandlerId);
             }
 
             return this.Context.Response;

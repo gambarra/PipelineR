@@ -16,6 +16,7 @@ namespace PipelineR.Sample.Pipeline.Handlers
         public override RequestHandlerResult HandleRequest(UserRequest request)
         {
             this.Context.CreateUserRequestHandlerSuccess = true;
+            this.Context.Name = request.Name;
             return this.Next();
         }
     }

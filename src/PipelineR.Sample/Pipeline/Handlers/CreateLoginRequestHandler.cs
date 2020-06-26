@@ -17,8 +17,10 @@ namespace PipelineR.Sample.Pipeline.Handlers
 
         public override RequestHandlerResult HandleRequest(UserRequest request)
         {
-            throw new Exception("teste");
-            return this.Finish("OK");
+
+            Console.WriteLine(Context.Name);
+
+            return this.Next("Para o id da step que queira");
         }
     }
 

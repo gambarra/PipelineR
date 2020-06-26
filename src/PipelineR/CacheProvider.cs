@@ -36,6 +36,7 @@ namespace PipelineR
 
         public async Task<bool> Add<T>(T obj, string key)
         {
+            await this._distributedCache.RemoveAsync(key);
 
             var ttl = TimeSpan.FromMinutes(this.redisSettings.TTLInMinutes);
             var options = new DistributedCacheEntryOptions
@@ -56,6 +57,7 @@ namespace PipelineR
 
             return true;
         }
+
         public async Task<T> Get<T>(string key)
         {
             var value = await this._distributedCache.GetStringAsync(key);

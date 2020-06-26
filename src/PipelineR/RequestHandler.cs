@@ -26,6 +26,7 @@ namespace PipelineR
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
         public IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
         public Policy Policy { get; set; }
+        public Policy<RequestHandlerResult> PolicyRequestHandler { get; set; }
 
         private Pipeline<TContext, TRequest> _pipeline;
         public TContext Context { get; private set; }
@@ -73,9 +74,9 @@ namespace PipelineR
 
         #region Methods
         public RequestHandlerResult Next() => Next(string.Empty);
-     
 
-        public RequestHandlerResult Next( string requestHandlerId)
+
+        public RequestHandlerResult Next(string requestHandlerId)
         {
             var request = (TRequest)this.Context.Request;
 
@@ -101,6 +102,13 @@ namespace PipelineR
                     result = HandleRequest(request);
                 });
             }
+            else if (this.PolicyRequestHandler != null)
+            {
+                result = this.PolicyRequestHandler.Execute(() =>
+                {
+                    return HandleRequest(request);
+                });
+            }
             else
             {
                 result = HandleRequest(request);
@@ -113,14 +121,14 @@ namespace PipelineR
 
         public void AddPipeline(Pipeline<TContext, TRequest> pipeline) => this._pipeline = pipeline;
 
-        public  string RequestHandleId()
+        public string RequestHandleId()
         {
             return this.GetType().Name;
         }
 
         public void UpdateContext(TContext context)
         {
-            this.Context = context;
+            context.ConvertTo(this.Context);
         }
 
         #endregion
@@ -132,7 +140,8 @@ namespace PipelineR
         RequestHandlerResult HandleRequest(TRequest request);
         IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
         string RequestHandleId();
+        Policy<RequestHandlerResult> PolicyRequestHandler { set; get; }
     }
 
- 
+
 }

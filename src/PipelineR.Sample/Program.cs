@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using PipelineR.Sample.Pipeline;
 using PipelineR.Sample.Pipeline.Handlers;
@@ -24,7 +25,7 @@ namespace PipelineR.Sample
 
             pipeline.Execute(new UserRequest()
             {
-                Name = "Yuri ",
+                Name = "Yuri sd iopipf",
                 Age = 10,
                 DocumentNumber = "125"
             });
@@ -41,7 +42,7 @@ namespace PipelineR.Sample
                 options.Configuration = "localhost";
             });
 
-            serviceProvider.AddPipelineRCache(new CacheSettings());
+            serviceProvider.AddPipelineRCache(new CacheSettings() { TTLInMinutes=10});
 
             serviceProvider.AddScoped<IPipeline<UserContext, UserRequest>>(provider =>
             {
@@ -49,6 +50,8 @@ namespace PipelineR.Sample
                     .Configure(provider)
                     .UseRecoveryRequestByHash()
                     .AddNext<ICreateUserRequestHandler>()
+                        .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
+                    .AddNext<ICreateLoginMark1Handler>()
                     .AddNext<ICreateLoginRequestHandler>();
      
 

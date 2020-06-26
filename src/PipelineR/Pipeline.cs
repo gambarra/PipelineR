@@ -118,7 +118,15 @@ namespace PipelineR
 
             return this;
         }
+        public Pipeline<TContext, TRequest> WithPolicy(Policy<RequestHandlerResult> policy)
+        {
+            if (policy != null && this._lastHandlerAdd != null)
+            {
+                this._lastRequestHandlerAdd.PolicyRequestHandler = policy;
+            }
 
+            return this;
+        }
         #endregion
 
         #region AddRollback
@@ -210,6 +218,7 @@ namespace PipelineR
 
             var lastRequestHandlerId = string.Empty;
             var nextRequestHandlerId = string.Empty;
+            TContext context = null;
 
             var hash = request.GenerateHash();
 
@@ -226,12 +235,10 @@ namespace PipelineR
                     }
                     else
                     {
-                        var context = this._serviceProvider.GetService<TContext>();
-
-                 
                         context = (TContext)snapshot.Context;
-
+                        context.Request = request;
                         nextRequestHandlerId = snapshot.LastRequestHandlerId;
+                        this._requestHandler.UpdateContext(context);
                     }
                 }
 

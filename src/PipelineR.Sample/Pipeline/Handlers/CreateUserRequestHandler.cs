@@ -5,6 +5,7 @@ namespace PipelineR.Sample.Pipeline.Handlers
 {
     public class CreateUserRequestHandler:RequestHandler<UserContext,UserRequest>, ICreateUserRequestHandler
     {
+        public static int retryCount = 0;
         public CreateUserRequestHandler(UserContext context) : base(context)
         {
         }
@@ -15,8 +16,13 @@ namespace PipelineR.Sample.Pipeline.Handlers
 
         public override RequestHandlerResult HandleRequest(UserRequest request)
         {
+            retryCount++;
+
+            if (retryCount < 2)
+                return this.Abort("error", 400);
+
             this.Context.CreateUserRequestHandlerSuccess = true;
-            this.Context.Name = request.Name;
+          
             return this.Next();
         }
     }

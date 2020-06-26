@@ -17,6 +17,7 @@ namespace PipelineR
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
         internal Expression<Func<TContext, TRequest, bool>> RequestCondition { get; set; }
         public Policy Policy { get; set; }
+
         public TContext Context { get; private set; }
 
         public abstract void HandleRollback(TRequest request);
@@ -48,7 +49,7 @@ namespace PipelineR
 
         public void UpdateContext(TContext context)
         {
-            this.Context = context;
+            context.ConvertTo(this.Context);
         }
     }
 

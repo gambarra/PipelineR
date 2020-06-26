@@ -12,7 +12,12 @@ namespace PipelineR.Sample.Pipeline
         }
     
         public bool CreateUserRequestHandlerSuccess { get; set; }
-        public string Name { get; set; }
+        public string Name { get; private set; }
+
+        public void UpdateName(string name)
+        {
+            this.Name = name;
+        }
 
     }
 }

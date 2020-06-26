@@ -6,6 +6,10 @@ namespace PipelineR
 {
     public class ErrorResult
     {
+        public ErrorResult()
+        {
+
+        }
         public ErrorResult(string source, string message, Exception exception, object result, string property)
         {
             this.Exception = exception;
@@ -14,12 +18,12 @@ namespace PipelineR
             this.Result = result;
             this.Property = property;
         }
-        
-        public ErrorResult(string source, Exception exception) : this(source, null, exception, null, null) 
+
+        public ErrorResult(string source, Exception exception) : this(source, null, exception, null, null)
         {
         }
-        
-        public ErrorResult(string source, string message) : this(source, message, null, null, null) 
+
+        public ErrorResult(string source, string message) : this(source, message, null, null, null)
         {
         }
 
@@ -27,11 +31,11 @@ namespace PipelineR
         {
         }
 
-        public ErrorResult(string message) : this(null, message, null, null, null) 
+        public ErrorResult(string message) : this(null, message, null, null, null)
         {
         }
-        
-        public ErrorResult(Exception exception) : this(null, null, exception, null, null) 
+
+        public ErrorResult(Exception exception) : this(null, null, exception, null, null)
         {
         }
 

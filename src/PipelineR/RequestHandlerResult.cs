@@ -6,13 +6,19 @@ namespace PipelineR
 {
     public class RequestHandlerResult
     {
+        public RequestHandlerResult()
+        {
+
+        }
         private readonly bool Success;
 
         private readonly object ResultObject;
 
         public IReadOnlyCollection<ErrorResult> Errors { private set; get; }
 
-        public int StatusCode { get; private set; }
+        public int StatusCode { get;  set; }
+
+        public void SetStatusCode(int statusCode) => this.StatusCode = statusCode;
 
         public RequestHandlerResult(IReadOnlyCollection<ErrorResult> errors, int statusCode)
         {
@@ -36,7 +42,7 @@ namespace PipelineR
         {
             this.Errors = new List<ErrorResult> { errorResult };
             this.Success = false;
-            this.StatusCode = (int) statusCode;
+            this.StatusCode = (int)statusCode;
         }
 
         public RequestHandlerResult(object result, int statusCode, bool isSuccessful)
@@ -50,7 +56,7 @@ namespace PipelineR
         {
             this.ResultObject = result;
             this.Success = isSuccessful;
-            this.StatusCode = (int) statusCode;
+            this.StatusCode = (int)statusCode;
         }
 
         public RequestHandlerResult(ErrorItemResponse error, HttpStatusCode statusCode = HttpStatusCode.BadRequest)

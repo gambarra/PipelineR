@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>PipelineR Step</Title>
+      <Author>Yuri Pereira</Author>
+      <Description></Description>
+      <Shortcut>PipelineRStep</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        <SnippetType>SurroundsWith</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Code Language="CSharp">
+        <![CDATA[
+						public interface I$Name$RequestHandler : IRequestHandler<$PipeName$Context, $PipeName$Request>
+						{
+						}
+						
+						public class $Name$RequestHandler : RequestHandler<$PipeName$Context, $PipeName$Request>,
+							I$Name$RequestHandler
+						{
+							public $Name$RequestHandler($PipeName$Context ctx) : base(ctx)
+							{
+							}
+
+							public override RequestHandlerResult HandleRequest($PipeName$Request request)
+							{
+								$end$
+
+								return this.Next(request);
+							}
+						}                                     
+                ]]>
+      </Code>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>Name</ID>
+          <ToolTip>Choose the name of the class.</ToolTip>
+          <Default></Default>
+        </Literal>
+        <Literal Editable="true">
+          <ID>PipeName</ID>
+          <ToolTip>Choose the name of the entity.</ToolTip>
+          <Default></Default>
+        </Literal>
+      </Declarations>
+      <Imports>
+        <Import>
+          <Namespace>PipelineR</Namespace>
+        </Import>
+      </Imports>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

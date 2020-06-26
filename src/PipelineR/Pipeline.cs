@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -41,6 +43,7 @@ namespace PipelineR
         {
             return new Pipeline<TContext, TRequest>();
         }
+
         public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider)
         {
             return new Pipeline<TContext, TRequest>(serviceProvider);
@@ -188,7 +191,6 @@ namespace PipelineR
 
         public Pipeline<TContext, TRequest> AddValidator<TValidator>()
         {
-
             var validator = (IValidator<TRequest>)_serviceProvider.GetService<TValidator>();
             return this.AddValidator(validator);
         }
@@ -204,8 +206,9 @@ namespace PipelineR
 
                 if (validateResult.IsValid == false)
                 {
-                    var errors = (validateResult.Errors.Select(p => new ErrorResult(p.ErrorMessage))).ToList();
-                    return new RequestHandlerResult(errors, 412);
+                    var errors = (validateResult.Errors.Select(p => 
+                        new ErrorResult(null, p.ErrorMessage, p.PropertyName))).ToList();
+                    return new RequestHandlerResult(errors, 400);
                 }
             }
 
@@ -284,7 +287,6 @@ namespace PipelineR
 
         private RequestHandlerResult ExecuteFinallyHandler(TRequest request)
         {
-
             RequestHandlerResult result = null;
 
             if (this._finallyRequestHandler != null)

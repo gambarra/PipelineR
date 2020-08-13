@@ -17,10 +17,15 @@ namespace PipelineR
             this.LastRequestHandlerId = lastRequestHandlerId;
             this.Context = context;
 
+            if (this.Context?.Response != null && this.Context.Response.IsSuccess() == false)
+            {
+                this.Context.Response = null;
+            }
+
         }
         public DateTime CreatedAt { get; set; }
         public bool Success { get; private set; }
         public string LastRequestHandlerId { get; private set; }
-        public BaseContext Context { get;  set; }
+        public BaseContext Context { get; set; }
     }
 }

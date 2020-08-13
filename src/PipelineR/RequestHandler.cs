@@ -40,25 +40,33 @@ namespace PipelineR
         #region Exit Pipeline
 
         protected RequestHandlerResult Abort(string errorMessage, int statusCode)
-            => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode, false);
+            => this.Context.Response = new RequestHandlerResult(errorMessage, statusCode, false)
+            .WithRequestHandlerId(this.RequestHandleId());
 
         protected RequestHandlerResult Abort(string errorMessage)
-            => this.Context.Response = new RequestHandlerResult(errorMessage, 0, false);
+            => this.Context.Response = new RequestHandlerResult(errorMessage, 0, false)
+              .WithRequestHandlerId(this.RequestHandleId());
 
         protected RequestHandlerResult Abort(object errorResult, int statusCode)
-            => this.Context.Response = new RequestHandlerResult(errorResult, statusCode, false);
+            => this.Context.Response = new RequestHandlerResult(errorResult, statusCode, false)
+              .WithRequestHandlerId(this.RequestHandleId());
 
         protected RequestHandlerResult Abort(object errorResult)
-            => this.Context.Response = new RequestHandlerResult(errorResult, 0, false);
+            => this.Context.Response = new RequestHandlerResult(errorResult, 0, false)
+              .WithRequestHandlerId(this.RequestHandleId());
 
         protected RequestHandlerResult Abort(ErrorResult errorResult, int statusCode)
-            => this.Context.Response = new RequestHandlerResult(errorResult, statusCode);
+            => this.Context.Response = new RequestHandlerResult(errorResult, statusCode)
+              .WithRequestHandlerId(this.RequestHandleId());
         protected RequestHandlerResult Abort(ErrorResult errorResult)
-            => this.Context.Response = new RequestHandlerResult(errorResult, 0);
+            => this.Context.Response = new RequestHandlerResult(errorResult, 0)
+              .WithRequestHandlerId(this.RequestHandleId());
         protected RequestHandlerResult Finish(object result, int statusCode)
-            => this.Context.Response = new RequestHandlerResult(result, statusCode, true);
+            => this.Context.Response = new RequestHandlerResult(result, statusCode, true)
+              .WithRequestHandlerId(this.RequestHandleId());
         protected RequestHandlerResult Finish(object result)
-            => this.Context.Response = new RequestHandlerResult(result, 0, true);
+            => this.Context.Response = new RequestHandlerResult(result, 0, true)
+              .WithRequestHandlerId(this.RequestHandleId());
 
         protected RequestHandlerResult Rollback(RequestHandlerResult result)
         {
@@ -106,6 +114,11 @@ namespace PipelineR
             {
                 result = this.PolicyRequestHandler.Execute(() =>
                 {
+                    if (this.Context.Response != null && this.Context.Response.StatusCode > 300 && this.Context.Response.RequestHandlerId != this.RequestHandleId())
+                    {
+                        throw new PipelinePolicyException(this.Context.Response);
+                    }
+
                     return HandleRequest(request);
                 });
             }

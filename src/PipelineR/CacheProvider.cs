@@ -1,6 +1,7 @@
 ﻿using JsonNet.PrivateSettersContractResolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Polly;
 using System;
 using System.IO;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PipelineR
 {
-    public class CacheProvider: ICacheProvider
+    public class CacheProvider : ICacheProvider
     {
         public CacheProvider(CacheSettings redisSettings, IDistributedCache distributedCache)
         {
@@ -60,13 +61,18 @@ namespace PipelineR
 
         public async Task<T> Get<T>(string key)
         {
-            var value = await this._distributedCache.GetStringAsync(key);
 
-            if (string.IsNullOrWhiteSpace(value))
+            var result = await Policy
+                .Handle<Exception>()
+                .RetryAsync(3)
+                .ExecuteAsync(async () => await this._distributedCache.GetStringAsync(key));
+
+
+            if (string.IsNullOrWhiteSpace(result))
             {
                 return default(T);
             }
-            JsonReader jsonReader = new JsonTextReader(new StringReader(value));
+            JsonReader jsonReader = new JsonTextReader(new StringReader(result));
 
             return GetSerializer().Deserialize<T>(jsonReader);
         }

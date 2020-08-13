@@ -10,17 +10,10 @@ namespace PipelineR.Sample.Pipeline.Handlers
         {
         }
 
-        public CreateUserRequestHandler(UserContext context, Expression<Func<UserContext, UserRequest, bool>> condition) : base(context, condition)
-        {
-        }
 
         public override RequestHandlerResult HandleRequest(UserRequest request)
         {
-            retryCount++;
-
-            if (retryCount < 2)
-                return this.Abort("error", 400);
-
+   
             this.Context.CreateUserRequestHandlerSuccess = true;
           
             return this.Next();

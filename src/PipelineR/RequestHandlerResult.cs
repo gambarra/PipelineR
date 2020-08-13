@@ -10,9 +10,19 @@ namespace PipelineR
         {
 
         }
-        private readonly bool Success;
 
-        private readonly object ResultObject;
+        public  RequestHandlerResult WithRequestHandlerId(string requestHandlerId)
+        {
+            this.RequestHandlerId = requestHandlerId;
+
+            return this;
+        }
+
+        public bool Success { get; private set; }
+
+        public object ResultObject { get;private set; }
+
+        public string RequestHandlerId { get;  set; }
 
         public IReadOnlyCollection<ErrorResult> Errors { private set; get; }
 

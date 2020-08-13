@@ -4,9 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Polly;
 
 namespace PipelineR
@@ -125,7 +122,7 @@ namespace PipelineR
         {
             if (policy != null && this._lastHandlerAdd != null)
             {
-                this._lastRequestHandlerAdd.PolicyRequestHandler = policy;
+                this._lastRequestHandlerAdd.PolicyRequestHandler = policy ;
             }
 
             return this;
@@ -198,7 +195,10 @@ namespace PipelineR
         #endregion
 
 
-        public RequestHandlerResult Execute(TRequest request)
+
+        public RequestHandlerResult Execute(TRequest request) => Execute(request, string.Empty);
+
+        public RequestHandlerResult Execute(TRequest request, string idempotencyKey)
         {
             if (this._validator != null)
             {
@@ -206,7 +206,7 @@ namespace PipelineR
 
                 if (validateResult.IsValid == false)
                 {
-                    var errors = (validateResult.Errors.Select(p => 
+                    var errors = (validateResult.Errors.Select(p =>
                         new ErrorResult(null, p.ErrorMessage, p.PropertyName))).ToList();
                     return new RequestHandlerResult(errors, 400);
                 }
@@ -223,7 +223,7 @@ namespace PipelineR
             var nextRequestHandlerId = string.Empty;
             TContext context = null;
 
-            var hash = request.GenerateHash();
+            var hash = idempotencyKey == string.Empty ? request.GenerateHash() : idempotencyKey;
 
             if (this._useReuseRequisitionHash)
             {
@@ -233,7 +233,7 @@ namespace PipelineR
                     if (snapshot.Success)
                     {
                         result = snapshot.Context.Response;
-                        result.SetStatusCode(202);
+                        result.SetStatusCode(200);
                         return result;
                     }
                     else
@@ -271,6 +271,10 @@ namespace PipelineR
 
                 result = RequestHandlerOrchestrator
                     .ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this._requestHandler, nextRequestHandlerId);
+            }
+            catch(PipelinePolicyException px)
+            {
+                result = px.Result;
             }
             catch (Exception ex)
             {
@@ -322,6 +326,7 @@ namespace PipelineR
 
     public interface IPipeline<TContext, in TRequest> where TContext : BaseContext
     {
+        RequestHandlerResult Execute(TRequest request, string idempotencyKey);
         RequestHandlerResult Execute(TRequest request);
     }
 }

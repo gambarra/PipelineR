@@ -13,6 +13,9 @@ namespace PipelineR.Sample.Pipeline.Handlers
         public override RequestHandlerResult HandleRequest(UserRequest request)
         {
             // throw new Exception("teste");
+
+            return this.Abort("error maroto", 400);
+
             this.Context.UpdateName(request.Name);
             Console.WriteLine(this.Context.Name);
 

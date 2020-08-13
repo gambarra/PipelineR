@@ -14,21 +14,20 @@ namespace PipelineR.Sample
         static void Main(string[] args)
         {
 
-       
-
-
             Console.WriteLine("Hello World!");
             var service = IOC();
 
             var pipeline = service
                 .GetService<IPipeline<UserContext, UserRequest>>();
 
-            pipeline.Execute(new UserRequest()
+         var response=   pipeline.Execute(new UserRequest()
             {
                 Name = "Yuri sd iopipf",
                 Age = 10,
                 DocumentNumber = "125"
             });
+
+            Console.WriteLine("");
 
             Console.ReadLine();
         }
@@ -52,6 +51,7 @@ namespace PipelineR.Sample
                     .AddNext<ICreateUserRequestHandler>()
                         .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
                     .AddNext<ICreateLoginMark1Handler>()
+                        .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
                     .AddNext<ICreateLoginRequestHandler>();
      
 

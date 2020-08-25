@@ -114,13 +114,18 @@ namespace PipelineR
             {
                 result = this.PolicyRequestHandler.Execute(() =>
                 {
-                    if (this.Context.Response != null && this.Context.Response.StatusCode > 300 && this.Context.Response.RequestHandlerId != this.RequestHandleId())
+                    if (this.Context.Response != null && this.Context.Response.IsSuccess()==false && this.Context.Response.RequestHandlerId != this.RequestHandleId())
                     {
                         throw new PipelinePolicyException(this.Context.Response);
                     }
 
                     return HandleRequest(request);
                 });
+
+                if (result.IsSuccess() == false)
+                {
+                    throw new PipelinePolicyException(this.Context.Response);
+                }
             }
             else
             {

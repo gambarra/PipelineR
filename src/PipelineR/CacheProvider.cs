@@ -11,17 +11,16 @@ namespace PipelineR
 {
     public class CacheProvider : ICacheProvider
     {
+        private readonly CacheSettings redisSettings;
+        private readonly IDistributedCache _distributedCache;
+        private JsonSerializer _serializer;
+
         public CacheProvider(CacheSettings redisSettings, IDistributedCache distributedCache)
         {
             this.redisSettings = redisSettings;
             this._distributedCache = distributedCache;
         }
-
-        private readonly CacheSettings redisSettings;
-
-        private readonly IDistributedCache _distributedCache;
-
-        private JsonSerializer _serializer;
+                
         private JsonSerializer GetSerializer()
         {
             if (_serializer == null)
@@ -34,9 +33,10 @@ namespace PipelineR
             return _serializer;
         }
 
-
         public async Task<bool> Add<T>(T obj, string key)
         {
+            key = GenerateKeyWithPreffix(key);
+
             await this._distributedCache.RemoveAsync(key);
 
             var ttl = TimeSpan.FromMinutes(this.redisSettings.TTLInMinutes);
@@ -61,6 +61,7 @@ namespace PipelineR
 
         public async Task<T> Get<T>(string key)
         {
+            key = GenerateKeyWithPreffix(key);
 
             var result = await Policy
                 .Handle<Exception>()
@@ -75,6 +76,18 @@ namespace PipelineR
             JsonReader jsonReader = new JsonTextReader(new StringReader(result));
 
             return GetSerializer().Deserialize<T>(jsonReader);
+        }
+
+        private string GenerateKeyWithPreffix(string key)
+        {
+            var keyWithPreffix = key;
+
+            if(string.IsNullOrWhiteSpace(this.redisSettings.Preffix) == false)
+            {
+                keyWithPreffix = $"{this.redisSettings.Preffix}:{key}";
+            }
+
+            return keyWithPreffix;
         }
     }
 

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Polly;
+using Serilog;
+using Serilog.Context;
 
 namespace PipelineR
 {
@@ -19,12 +21,14 @@ namespace PipelineR
         private readonly Stack<RollbackHandler<TContext, TRequest>> _rollbacks;
         private IHandler<TContext, TRequest> _lastHandlerAdd;
         private bool _useReuseRequisitionHash;
+        private string _requestKey;
 
         #region Constructores
 
-        private Pipeline(IServiceProvider serviceProvider) : this()
+        private Pipeline(IServiceProvider serviceProvider, string requestKey = null) : this()
         {
             this._serviceProvider = serviceProvider;
+            this._requestKey = requestKey;
             _cacheProvider = serviceProvider.GetService<ICacheProvider>();
         }
 
@@ -41,9 +45,9 @@ namespace PipelineR
             return new Pipeline<TContext, TRequest>();
         }
 
-        public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider)
+        public static Pipeline<TContext, TRequest> Configure(IServiceProvider serviceProvider, string requestKey=null)
         {
-            return new Pipeline<TContext, TRequest>(serviceProvider);
+            return new Pipeline<TContext, TRequest>(serviceProvider, requestKey);
         }
 
         public Pipeline<TContext, TRequest> UseRecoveryRequestByHash()
@@ -122,7 +126,7 @@ namespace PipelineR
         {
             if (policy != null && this._lastHandlerAdd != null)
             {
-                this._lastRequestHandlerAdd.PolicyRequestHandler = policy ;
+                this._lastRequestHandlerAdd.PolicyRequestHandler = policy;
             }
 
             return this;
@@ -272,13 +276,20 @@ namespace PipelineR
                 result = RequestHandlerOrchestrator
                     .ExecuteHandler(request, (RequestHandler<TContext, TRequest>)this._requestHandler, nextRequestHandlerId);
             }
-            catch(PipelinePolicyException px)
+            catch (PipelinePolicyException px)
             {
                 result = px.Result;
             }
             catch (Exception ex)
             {
-                //faz nada
+                if (Log.Logger != null)
+                {
+
+                    using (LogContext.PushProperty("RequestKey", this._requestKey))
+                    {
+                        Log.Logger.Error(ex, string.Concat("Error - ", this._requestHandler.Context.CurrentRequestHandleId));
+                    }
+                }
             }
             finally
             {

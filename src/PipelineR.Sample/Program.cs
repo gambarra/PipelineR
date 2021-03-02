@@ -15,6 +15,10 @@ namespace PipelineR.Sample
         {
 
             Console.WriteLine("Hello World!");
+
+
+            var result = false && false;
+            Console.WriteLine(result);
             var service = IOC();
 
             var pipeline = service

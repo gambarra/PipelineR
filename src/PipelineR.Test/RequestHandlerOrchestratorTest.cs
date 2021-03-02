@@ -19,12 +19,13 @@ namespace PipelineR.Test
         [Fact]
         public void ExecuteHandler_RequestHandlerWithoutCondition_Execute()
         {
-            var request = new SampleRequest();
-            var requestHandler = new Mock<FirstRequestHandler>(new ContextSample());
+            var context = new ContextSample()
+            {
+                Values = new List<string>() { "primeiro" }
+            };
 
-            RequestHandlerOrchestrator.ExecuteHandler(request, requestHandler.Object);
-
-            requestHandler.Verify(p=>p.HandleRequest(request));
+            var resilt = new ContextSample();
+             context.ConvertTo<ContextSample>(resilt);
        
         }
 

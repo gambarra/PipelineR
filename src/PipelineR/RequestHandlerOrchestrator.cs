@@ -1,4 +1,6 @@
-﻿namespace PipelineR
+﻿using System;
+
+namespace PipelineR
 {
     public static class RequestHandlerOrchestrator
     {
@@ -10,26 +12,50 @@
         public static RequestHandlerResult ExecuteHandler<TContext, TRequest>(TRequest request,
             RequestHandler<TContext, TRequest> requestHandler, string requestHandlerId) where TContext : BaseContext
         {
-            RequestHandlerResult result;
+            RequestHandlerResult result = null;
 
             requestHandler.Context.CurrentRequestHandleId = requestHandler.RequestHandleId();
 
-         
-
             if (UseRequestHandlerId(requestHandlerId) &&
                 requestHandler.Context.CurrentRequestHandleId.Equals(requestHandlerId, System.StringComparison.InvariantCultureIgnoreCase) == false)
-                return requestHandler.Next(requestHandlerId);
-           
+            {
+                
+                if(requestHandler.RecoveryRequestHandler != null)
+                {
+                    var recoveryRequestHandler = ((RecoveryHandler<TContext, TRequest>)requestHandler.RecoveryRequestHandler);
+                    if (recoveryRequestHandler.Condition != null)
+                    {
+                        if(recoveryRequestHandler.Condition.IsSatisfied(recoveryRequestHandler.Context, request))
+                        {
+                            result = recoveryRequestHandler.Execute(request);
+                        }
+                    }
+                    else
+                    {
+                        result = recoveryRequestHandler.Execute(request);
+                    }
+                    
+                    requestHandler.Context.CurrentRequestHandleId = requestHandler.RecoveryRequestHandler.RequestHandleId();
+                }
 
-            if (requestHandler.Condition != null)
-            {
-                result = requestHandler.Condition.IsSatisfied(requestHandler.Context, request)
-                    ? requestHandler.Execute(request)
-                    : ((RequestHandler<TContext, TRequest>)requestHandler).Next();
+                if (result == null)
+                {
+                    return requestHandler.Next(requestHandlerId);
+                }
             }
-            else
+           
+            if(result == null)
             {
-                result = requestHandler.Execute(request);
+                if (requestHandler.Condition != null)
+                {
+                    result = requestHandler.Condition.IsSatisfied(requestHandler.Context, request)
+                        ? requestHandler.Execute(request)
+                        : requestHandler.Next();
+                }
+                else
+                {
+                    result = requestHandler.Execute(request);
+                }
             }
 
             return result;

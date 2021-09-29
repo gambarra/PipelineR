@@ -28,8 +28,9 @@ namespace PipelineR.Sample
             {
                 Name = "Yuri sd iopipf",
                 Age = 10,
-                DocumentNumber = "125"
-            });
+                DocumentNumber = "125",
+                //StartPipelineFromStep = "CreateLoginRequestHandler"
+         });
 
             Console.WriteLine("");
 
@@ -51,7 +52,6 @@ namespace PipelineR.Sample
             {
                 var pipeline = Pipeline<UserContext, UserRequest>
                     .Configure(provider)
-                    .UseRecoveryRequestByHash()
                     .AddNext<ICreateUserRequestHandler>()
                         .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
                     .AddNext<ICreateLoginMark1Handler>()

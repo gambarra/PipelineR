@@ -224,7 +224,11 @@ namespace PipelineR
             RequestHandlerResult result = null;
 
             var lastRequestHandlerId = string.Empty;
-            var nextRequestHandlerId = string.Empty;
+            var nextRequestHandlerId =
+                typeof(TRequest).IsSubclassOf(typeof(PipelineRequest)) ?
+                (request as PipelineRequest).StartPipelineFromStep :
+                string.Empty;
+
             TContext context = null;
 
             var hash = idempotencyKey == string.Empty ? request.GenerateHash() : idempotencyKey;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PipelineR.Sample.Pipeline
 {
-    public class UserRequest
+    public class UserRequest : PipelineRequest
     {
         public string Name { get; set; }
         public string DocumentNumber { get; set; }

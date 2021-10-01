@@ -198,11 +198,33 @@ namespace PipelineR
 
         #endregion
 
+        #region AddRecovery
+        public Pipeline<TContext, TRequest> WithRecovery(IRecoveryHandler<TContext, TRequest> requestHandler)
+        {
+            if (this._requestHandler != null)
+            {
+                _lastRequestHandlerAdd.RecoveryRequestHandler = requestHandler;
+            }
+
+            return this;
+        }
+
+        public Pipeline<TContext, TRequest> WithRecovery<TRequestHandler>(
+            Expression<Func<TContext, TRequest, bool>> condition = null, Policy policy = null)
+        {
+            var requestHandler = ((RecoveryHandler<TContext, TRequest>)(IRecoveryHandler<TContext, TRequest>)_serviceProvider.GetService<TRequestHandler>());
+
+            requestHandler.Condition = condition ?? _lastRequestHandlerAdd.Condition;
+            requestHandler.Policy = policy ?? _lastRequestHandlerAdd.Policy;
+
+            return this.WithRecovery(requestHandler);
+        }
+        #endregion
 
 
         public RequestHandlerResult Execute(TRequest request) => Execute(request, string.Empty);
-
-        public RequestHandlerResult Execute(TRequest request, string idempotencyKey)
+        public RequestHandlerResult Execute(TRequest request, string recoverFromStep) => Execute(request, string.Empty, recoverFromStep);
+        public RequestHandlerResult Execute(TRequest request, string idempotencyKey, string recoverFromStep)
         {
             if (this._validator != null)
             {
@@ -224,7 +246,11 @@ namespace PipelineR
             RequestHandlerResult result = null;
 
             var lastRequestHandlerId = string.Empty;
-            var nextRequestHandlerId = string.Empty;
+            var nextRequestHandlerId = 
+                !string.IsNullOrEmpty(recoverFromStep) ? 
+                recoverFromStep :
+                string.Empty;
+
             TContext context = null;
 
             var hash = idempotencyKey == string.Empty ? request.GenerateHash() : idempotencyKey;
@@ -337,7 +363,8 @@ namespace PipelineR
 
     public interface IPipeline<TContext, in TRequest> where TContext : BaseContext
     {
-        RequestHandlerResult Execute(TRequest request, string idempotencyKey);
+        RequestHandlerResult Execute(TRequest request, string idempotencyKey, string recoverFromStep);
+        RequestHandlerResult Execute(TRequest request, string recoverFromStep);
         RequestHandlerResult Execute(TRequest request);
     }
 }

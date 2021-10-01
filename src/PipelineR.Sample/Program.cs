@@ -29,7 +29,7 @@ namespace PipelineR.Sample
                 Name = "Yuri sd iopipf",
                 Age = 10,
                 DocumentNumber = "125"
-            });
+         });
 
             Console.WriteLine("");
 
@@ -51,12 +51,14 @@ namespace PipelineR.Sample
             {
                 var pipeline = Pipeline<UserContext, UserRequest>
                     .Configure(provider)
-                    .UseRecoveryRequestByHash()
                     .AddNext<ICreateUserRequestHandler>()
                         .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
+                        .AddRecovery<IInitializeCreateUserRecoveryStep>()
                     .AddNext<ICreateLoginMark1Handler>()
+                        .AddRecovery<IInitializeCreateUserRecoveryStep>()
                         .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
-                    .AddNext<ICreateLoginRequestHandler>();
+                    .AddNext<ICreateLoginRequestHandler>()
+                        .AddRecovery<IInitializeCreateUserRecoveryStep>();
      
 
                 return pipeline;
@@ -66,6 +68,7 @@ namespace PipelineR.Sample
             serviceProvider.AddScoped<ICreateLoginRequestHandler, CreateLoginRequestHandler>();
             serviceProvider.AddScoped<ICreateLoginMark1Handler, CreateLoginMark1Handler>();
             serviceProvider.AddScoped<ICreateUserRollbackHandler, CreateUserRollbackHandler>();
+            serviceProvider.AddScoped<IInitializeCreateUserRecoveryStep, InitializeCreateUserRecoveryStep>();
             serviceProvider.AddScoped<UserContext>();
 
             return serviceProvider.BuildServiceProvider();

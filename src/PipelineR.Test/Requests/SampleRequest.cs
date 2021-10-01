@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PipelineR.Test.Request
+﻿namespace PipelineR.Test.Request
 {
     public class SampleRequest
     {

@@ -25,6 +25,7 @@ namespace PipelineR
         #region  Properties
         public Expression<Func<TContext, TRequest, bool>> Condition { get; set; }
         public IRequestHandler<TContext, TRequest> NextRequestHandler { get; set; }
+        public IRecoveryHandler<TContext, TRequest> RecoveryRequestHandler { get; set; }
         public Policy Policy { get; set; }
         public Policy<RequestHandlerResult> PolicyRequestHandler { get; set; }
 

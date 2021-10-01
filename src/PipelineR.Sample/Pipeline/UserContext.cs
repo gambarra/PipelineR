@@ -13,6 +13,7 @@ namespace PipelineR.Sample.Pipeline
     
         public bool CreateUserRequestHandlerSuccess { get; set; }
         public string Name { get; private set; }
+        public bool RecoveryWasExecuted { get; set; }
 
         public void UpdateName(string name)
         {

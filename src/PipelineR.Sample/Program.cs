@@ -53,12 +53,12 @@ namespace PipelineR.Sample
                     .Configure(provider)
                     .AddNext<ICreateUserRequestHandler>()
                         .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
-                        .AddRecovery<IInitializeCreateUserRecoveryStep>()
+                        .WithRecovery<IInitializeCreateUserRecoveryStep>()
                     .AddNext<ICreateLoginMark1Handler>()
-                        .AddRecovery<IInitializeCreateUserRecoveryStep>()
+                        .WithRecovery<IInitializeCreateUserRecoveryStep>()
                         .WithPolicy(Policy.HandleResult<RequestHandlerResult>(p => p.StatusCode != (int)HttpStatusCode.Created).Retry(3))
                     .AddNext<ICreateLoginRequestHandler>()
-                        .AddRecovery<IInitializeCreateUserRecoveryStep>();
+                        .WithRecovery<IInitializeCreateUserRecoveryStep>();
      
 
                 return pipeline;

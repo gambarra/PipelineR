@@ -134,5 +134,26 @@ namespace PipelineR.Test
             Assert.False(context.UpdateAccountRecoveryHandlerWasExecuted);
             Assert.False(context.CreateUserApiFourRecoveryHandlerWasExecuted);
         }
+
+        [Fact]
+        public void Should_return_errorResult_when_exception()
+        {
+            var context = new ContextSample();
+            var request = new SampleRequest();
+
+            var pipeline = new Pipeline<ContextSample, SampleRequest>()
+                .AddNext(new InitializeCreateUserHandler(context))
+                .AddNext(new CreateUserApiOneHandler(context))
+                .AddNext(new CreateUserApiTwoHandler(context))
+                .AddNext(new UpdateAccountHandler(context))
+                .AddNext(new CreateUserApiThreeHandler(context))
+                .AddNext(new CreateUserApiThreeDotOneHandler(context))
+                .AddNext(new CreateUserApiFourHandler(context))
+                .Execute(request);
+
+            Assert.False(pipeline.IsSuccess());
+            Assert.Equal(500, pipeline.StatusCode);
+            Assert.Equal(1, pipeline.Errors.Count);
+        }
     }
 }

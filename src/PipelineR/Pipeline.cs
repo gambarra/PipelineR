@@ -316,6 +316,7 @@ namespace PipelineR
                         Log.Logger.Error(ex, string.Concat("Error - ", this._requestHandler.Context.CurrentRequestHandleId));
                     }
                 }
+                result = new RequestHandlerResult(new ErrorResult(ex.Source, ex.GetBaseException().Message, ex, null, null), 500);
             }
             finally
             {
